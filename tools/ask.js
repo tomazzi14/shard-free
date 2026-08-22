@@ -6,15 +6,7 @@
 
 const Nodo = require('../lib/nodo.js')
 
-// En Bare no hay `process`. bare-process lo emula; para el argv seguimos usando Bare.argv,
-// que es lo que tenemos verificado.
-const proc = (() => {
-  try {
-    return require('bare-process')
-  } catch {
-    return process
-  }
-})()
+const { proc } = require('../lib/runtime.js')
 
 const escribir = (txt) => proc.stdout.write(txt)
 const salir = (code) => (typeof Bare !== 'undefined' ? Bare.exit(code) : proc.exit(code))

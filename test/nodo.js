@@ -1,12 +1,7 @@
 const { test } = require('brittle')
 const Nodo = require('../lib/nodo.js')
 
-let EventEmitter
-try {
-  EventEmitter = require('bare-events')
-} catch {
-  EventEmitter = require('events')
-}
+const { EventEmitter } = require('../lib/runtime.js')
 
 // Descubrimiento de mentira: deja meter y sacar peers a mano.
 class DiscoveryFalso extends EventEmitter {
