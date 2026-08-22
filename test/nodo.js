@@ -96,12 +96,14 @@ test('preguntar usa el plan del momento', (t) => {
   t.ok(planes[1].completo, 'la segunda ya tiene todas las capas')
 })
 
-test('preguntar le pasa el modelo y el prompt a la inferencia', (t) => {
-  t.plan(2)
+test('preguntar le pasa el modelo, el binario y el prompt a la inferencia', (t) => {
+  t.plan(3)
   const { nodo: n } = nodo({
     modelo: '/m.gguf',
+    binario: '/opt/llama-cli',
     inferir: (plan, opciones) => {
       t.is(opciones.modelo, '/m.gguf')
+      t.is(opciones.binario, '/opt/llama-cli', 'el motor tampoco viaja con la app')
       t.is(opciones.prompt, 'cual es la capital?')
     }
   })
