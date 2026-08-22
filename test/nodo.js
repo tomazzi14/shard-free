@@ -38,7 +38,17 @@ function servidorFalso() {
     fn.emisor.parar = () => (fn.parado = true)
     return fn.emisor
   }
+  fn.listo = () => fn.emisor.emit('listo', fn.puerto)
+  fn.romper = (msg) => fn.emisor.emit('error', new Error(msg))
   return fn
+}
+
+// Un nodo que ya arranco y cuyo servidor de capas esta sirviendo: el estado normal.
+function nodoSirviendo(extra) {
+  const todo = nodo(extra)
+  todo.nodo.start()
+  todo.servidor.listo()
+  return todo
 }
 
 function nodo(extra = {}) {
@@ -56,7 +66,7 @@ function nodo(extra = {}) {
 }
 
 test('el nodo se cuenta a si mismo entre los shards', (t) => {
-  const { nodo: n } = nodo()
+  const { nodo: n } = nodoSirviendo()
   const plan = n.plan()
 
   t.is(plan.cubiertas, 15, '1GB propio son 15 capas')
@@ -64,47 +74,67 @@ test('el nodo se cuenta a si mismo entre los shards', (t) => {
   t.absent(plan.completo)
 })
 
-test('avisa el estado al arrancar, antes de encontrar a nadie', (t) => {
-  t.plan(2)
-  const { nodo: n } = nodo()
+test('no ofrece capas hasta que su servidor esta sirviendo de verdad', (t) => {
+  const { nodo: n, servidor } = nodo()
+  n.start()
 
+  t.is(n.plan().cubiertas, 0, 'anunciar capas antes de poder servirlas es mentir')
+  servidor.listo()
+  t.is(n.plan().cubiertas, 15, 'y recien ahi las ofrece')
+})
+
+test('avisa el estado cuando ya puede servir, sin haber encontrado a nadie', (t) => {
+  t.plan(2)
+  const { nodo: n, servidor } = nodo()
+
+  n.start()
   n.on('estado', (plan) => {
     t.absent(plan.completo, 'arranca incompleto')
     t.alike(plan.faltan, { desde: 15, hasta: 27 })
   })
-  n.start()
+  servidor.listo()
 })
 
-test('cuando entra un peer el estado pasa a completo', (t) => {
-  const { nodo: n, discovery } = nodo()
-  const estados = []
-  n.on('estado', (plan) => estados.push(plan.completo))
+test('si el servidor de capas se cae, dejamos de ofrecerlas', (t) => {
+  const { nodo: n, servidor } = nodoSirviendo()
+  n.on('error', () => {})
 
-  n.start()
-  discovery.entra('zzz', 1, '10.0.0.9')
-
-  t.alike(estados, [false, true], 'incompleto y despues completo')
-})
-
-test('cuando se cae el peer vuelve a incompleto', (t) => {
-  const { nodo: n, discovery } = nodo()
   const estados = []
   n.on('estado', (plan) => estados.push(plan))
 
-  n.start()
+  servidor.romper('el servidor de capas se cayo (codigo 0)')
+
+  t.is(n.ficha.ofreceGB, 0, 'seguir anunciando manda a las otras contra capas fantasma')
+  t.is(estados[estados.length - 1].cubiertas, 0, 'y el estado nuevo sale enseguida')
+})
+
+test('cuando entra un peer el estado pasa a completo', (t) => {
+  const { nodo: n, discovery } = nodoSirviendo()
+  const estados = []
+  n.on('estado', (plan) => estados.push(plan.completo))
+
+  discovery.entra('zzz', 1, '10.0.0.9')
+
+  t.alike(estados, [true], 'con las dos, el modelo esta completo')
+})
+
+test('cuando se cae el peer vuelve a incompleto', (t) => {
+  const { nodo: n, discovery } = nodoSirviendo()
+  const estados = []
+  n.on('estado', (plan) => estados.push(plan))
+
   discovery.entra('zzz', 1, '10.0.0.9')
   discovery.sale('zzz')
 
-  t.ok(estados[1].completo)
-  t.absent(estados[2].completo, 'se cayo una capa, se cayo el modelo')
-  t.alike(estados[2].faltan, { desde: 15, hasta: 27 })
+  t.ok(estados[0].completo)
+  t.absent(estados[1].completo, 'se cayo una capa, se cayo el modelo')
+  t.alike(estados[1].faltan, { desde: 15, hasta: 27 })
 })
 
 test('preguntar usa el plan del momento', (t) => {
   const planes = []
-  const { nodo: n, discovery } = nodo({ inferir: (plan) => planes.push(plan) })
+  const { nodo: n, discovery } = nodoSirviendo({ inferir: (plan) => planes.push(plan) })
 
-  n.start()
   n.preguntar('hola')
   discovery.entra('zzz', 1, '10.0.0.9')
   n.preguntar('hola')
@@ -165,6 +195,8 @@ test('los errores del descubrimiento salen por el nodo', (t) => {
 
 test('una maquina sin llama.cpp no promete capas que no puede servir', (t) => {
   const { nodo: n } = nodo({ buscar: () => null, ofreceGB: 8 })
+  n.on('error', () => {})
+  n.start()
 
   t.is(n.ficha.ofreceGB, 0, 'si no puede servir, ofrece cero')
   t.absent(n.plan().asignaciones.length, 'y no aparece en el reparto')
