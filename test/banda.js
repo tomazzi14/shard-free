@@ -40,3 +40,15 @@ test('sin peers no imprime una lista vacia enganosa', (t) => {
     'deja claro que no hay a quien preguntarle'
   )
 })
+
+test('la version se ve en el borde, que es lo que cambia con el OTA', (t) => {
+  const lineas = banda(completo, '0.2.0')
+
+  t.ok(lineas[0].endsWith(' shard v0.2.0'), 'queda a la derecha del borde de arriba')
+  t.is(lineas[0].length, 64, 'no desalinea la banda')
+  t.absent(banda.titulo(completo).includes('0.2.0'), 'no le roba lugar al estado del modelo')
+})
+
+test('sin version la banda sigue siendo la de siempre', (t) => {
+  t.is(banda(completo)[0], '-'.repeat(64))
+})

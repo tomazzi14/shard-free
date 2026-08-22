@@ -106,7 +106,7 @@ nodo.on('peer-lost', (peer) => {
   console.log(`\n- ${peer.ficha.etiqueta} (${peer.address}) se fue`)
 })
 
-nodo.on('estado', (plan) => console.log('\n' + banda(plan).join('\n')))
+nodo.on('estado', (plan) => console.log('\n' + banda(plan, pkg.version).join('\n')))
 nodo.on('error', (err) => console.error('[nodo:error]', err.message))
 
 nodo.start()
@@ -124,5 +124,5 @@ if (cmd.flags.ask) {
       .on('fin', () => apagar(0))
   })
 } else {
-  console.log('\nShard corriendo. Ctrl+C para parar.\n')
+  console.log(`\nShard v${pkg.version} corriendo. Ctrl+C para parar.\n`)
 }
