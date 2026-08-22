@@ -113,6 +113,7 @@ nodo.on('peer-lost', (peer) => {
   console.log(`\n- ${peer.ficha.etiqueta} (${peer.address}) se fue`)
 })
 
+nodo.on('capas-listas', (puerto) => console.log(`[${etiqueta}] sirviendo capas en :${puerto}`))
 nodo.on('estado', (plan) => console.log('\n' + banda(plan, pkg.version).join('\n')))
 nodo.on('error', (err) => console.error('[nodo:error]', err.message))
 

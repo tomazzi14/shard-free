@@ -124,6 +124,27 @@ test('termina bien y avisa', (t) => {
   const spawn = spawnFalso()
 
   inferir(completo, opciones(spawn)).on('fin', () => t.pass('emitio fin'))
+
+  spawn.stdout('> cual es la capital de Argentina?\nBuenos Aires.\n[ Prompt: 1 t/s ]')
+  spawn.salir(0)
+})
+
+test('salir con codigo 0 sin contestar nada no es terminar bien', (t) => {
+  t.plan(2)
+  const spawn = spawnFalso()
+
+  // Lo que pasa de verdad cuando no hay un rpc-server escuchando: llama-cli se queja por
+  // stderr, no contesta, y sale con codigo 0. Antes lo dabamos por bueno y el panel
+  // quedaba mudo sin decir por que.
+  inferir(completo, opciones(spawn))
+    .on('fin', () => t.fail('no contesto nada, no puede ser un final feliz'))
+    .on('error', (err) => {
+      t.ok(/no devolvio nada/.test(err.message))
+      t.ok(/Failed to connect/.test(err.message), 'y arrastra la queja de llama.cpp')
+    })
+
+  spawn.stderr('0.00.062 E Failed to connect to 127.0.0.1:50060\n')
+  spawn.stdout('\nLoading model...\n')
   spawn.salir(0)
 })
 

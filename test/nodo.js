@@ -29,9 +29,23 @@ class DiscoveryFalso extends EventEmitter {
   }
 }
 
+// Servidor de capas de mentira: el nodo lo arranca solo, y en los tests no queremos
+// levantar un proceso de verdad.
+function servidorFalso() {
+  const fn = (opciones) => {
+    fn.puerto = opciones.puerto
+    fn.emisor = new EventEmitter()
+    fn.emisor.parar = () => (fn.parado = true)
+    return fn.emisor
+  }
+  return fn
+}
+
 function nodo(extra = {}) {
   const discovery = new DiscoveryFalso()
-  return { discovery, nodo: new Nodo({ etiqueta: 'yo', ofreceGB: 1, discovery, ...extra }) }
+  const servidor = servidorFalso()
+  const n = new Nodo({ etiqueta: 'yo', ofreceGB: 1, discovery, servidor, ...extra })
+  return { discovery, servidor, nodo: n }
 }
 
 test('el nodo se cuenta a si mismo entre los shards', (t) => {
@@ -113,6 +127,24 @@ test('start y stop llegan al descubrimiento', (t) => {
   t.ok(discovery.arrancado)
   n.stop()
   t.absent(discovery.arrancado)
+})
+
+test('el nodo levanta su propio servidor de capas, en el puerto que anuncia', (t) => {
+  const { nodo: n, servidor } = nodo({ rpcPort: 50055 })
+  n.start()
+
+  t.is(servidor.puerto, 50055, 'anunciar un puerto y no servirlo seria mentir')
+  n.stop()
+  t.ok(servidor.parado, 'y al parar no deja el proceso huerfano')
+})
+
+test('si el servidor de capas se rompe, el error sale por el nodo', (t) => {
+  t.plan(1)
+  const { nodo: n, servidor } = nodo()
+
+  n.on('error', (err) => t.is(err.message, 'el servidor de capas se cayo (codigo 1)'))
+  n.start()
+  servidor.emisor.emit('error', new Error('el servidor de capas se cayo (codigo 1)'))
 })
 
 test('los errores del descubrimiento salen por el nodo', (t) => {
