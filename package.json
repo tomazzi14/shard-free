@@ -7,7 +7,7 @@
   "upgrade": "pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo",
   "scripts": {
     "format": "prettier . --write",
-    "test": "brittle-bare test/index.js test/shard-plan.js test/inferencia.js",
+    "test": "brittle-bare test/index.js test/shard-plan.js test/inferencia.js test/nodo.js",
     "lint": "prettier . --check && lunte lib tools test workers scripts app.js bin.mjs",
     "start": "bare bin.mjs --no-updates",
     "make": "node scripts/make.js",
