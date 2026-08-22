@@ -16,7 +16,10 @@ function socketFalso() {
     },
     send(buf, off, len, puerto, address, cb) {
       enviados.push({ address, sobre: JSON.parse(buf.toString()) })
-      if (cb) cb(null)
+      if (cb) cb(this.fallo || null)
+    },
+    fallarCon(code) {
+      this.fallo = Object.assign(new Error(`send ${code}`), { code })
     },
     close() {
       this.cerrado = true
@@ -168,5 +171,47 @@ test('un peer que sigue respondiendo no se da por perdido', (t) => {
   disco._limpiar()
 
   t.is(disco.peers.size, 1)
+  disco.stop()
+})
+
+test('las direcciones vacias de la subred no inundan el log', (t) => {
+  const { disco, socket } = nodo()
+  disco.on('error', () => t.fail('EHOSTDOWN es lo normal al barrer, no un error de la app'))
+  disco.start()
+
+  socket.fallarCon('EHOSTDOWN')
+  disco._enviar({ t: 'hello' }, '192.168.1.9')
+  disco._enviar({ t: 'hello' }, '192.168.1.10')
+
+  t.is(disco.sinRespuesta.get('EHOSTDOWN'), 2, 'pero se cuentan, no se tiran a la basura')
+  disco.stop()
+})
+
+test('un error inesperado si llega al log', (t) => {
+  const { disco, socket } = nodo()
+  const vistos = []
+  disco.on('error', (err) => vistos.push(err.code))
+  disco.start()
+
+  socket.fallarCon('EACCES')
+  disco._enviar({ t: 'hello' }, '192.168.1.9')
+
+  t.alike(vistos, ['EACCES'], 'lo que no es una direccion vacia se reporta')
+  t.is(disco.sinRespuesta.size, 0)
+  disco.stop()
+})
+
+test('el barrido reporta cuantas direcciones no contestaron', (t) => {
+  const { disco, socket } = nodo()
+  const barridos = []
+  disco.on('sweep', (info) => barridos.push(info))
+  disco.start()
+
+  socket.fallarCon('EHOSTDOWN')
+  disco._enviar({ t: 'hello' }, '192.168.1.9')
+  disco._barrer()
+
+  t.alike(barridos[1].sinRespuesta, { EHOSTDOWN: 1 }, 'el barrido siguiente trae la cuenta')
+  t.is(disco.sinRespuesta.size, 0, 'y arranca de cero para el suyo')
   disco.stop()
 })

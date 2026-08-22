@@ -62,7 +62,11 @@ disco.on('listening', (info) => {
 })
 
 disco.on('sweep', (info) => {
-  console.log(`[${etiqueta}] barriendo ${info.total} direcciones de ${info.red}`)
+  const mudas = Object.entries(info.sinRespuesta)
+    .map(([code, n]) => `${n} ${code}`)
+    .join(', ')
+  const anterior = mudas ? ` (barrido anterior: ${mudas})` : ''
+  console.log(`[${etiqueta}] barriendo ${info.total} direcciones de ${info.red}${anterior}`)
 })
 
 disco.on('peer', (peer) => {
