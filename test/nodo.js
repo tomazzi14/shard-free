@@ -17,6 +17,7 @@ class DiscoveryFalso extends EventEmitter {
   }
   start() {
     this.arrancado = true
+    this.emit('listening', { address: '10.0.0.1', puerto: 41234 })
   }
   stop() {
     this.arrancado = false

@@ -215,3 +215,19 @@ test('el barrido reporta cuantas direcciones no contestaron', (t) => {
   t.is(disco.sinRespuesta.size, 0, 'y arranca de cero para el suyo')
   disco.stop()
 })
+
+test('un puerto ocupado se explica, no tumba la app', (t) => {
+  const socket = socketFalso()
+  socket.bind = () => {
+    throw Object.assign(new Error('address already in use'), { code: 'EADDRINUSE' })
+  }
+  const disco = new LanDiscovery({ id: 'yo', ficha: {}, socket })
+
+  const vistos = []
+  disco.on('error', (err) => vistos.push(err.message))
+  disco.start()
+
+  t.is(vistos.length, 1, 'sale por el evento, no como excepcion sin atrapar')
+  t.ok(/puerto 41234 ya esta ocupado/.test(vistos[0]), 'dice cual es el puerto y por que')
+  t.absent(disco.activo, 'y no se queda creyendo que esta escuchando')
+})

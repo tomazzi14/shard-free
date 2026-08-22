@@ -6,6 +6,8 @@ import { isWindows } from 'which-runtime'
 import path from 'bare-path'
 import pkg from './package.json'
 import App from './app.js'
+import Nodo from './lib/nodo.js'
+import banda from './lib/banda.js'
 
 const appName = pkg.productName || pkg.name
 const isDev = path.basename(Bare.argv[0]) === (isWindows ? 'bare.exe' : 'bare')
@@ -15,7 +17,13 @@ const cmd = command(
   summary(pkg.description),
   flag('--version|-v', 'Print the current version'),
   flag('--storage <dir>', 'custom storage directory'),
-  flag('--no-updates', 'disable OTA updates for this run')
+  flag('--no-updates', 'disable OTA updates for this run'),
+  flag('--label <name>', 'name this machine shows to the other peers'),
+  flag('--port <n>', 'port where this machine serves its layers (default 50052)'),
+  flag('--offer <gb>', 'how much memory this machine lends (default: half its RAM)'),
+  flag('--model <path>', 'path to the .gguf'),
+  flag('--llama <path>', 'path to llama-cli'),
+  flag('--ask <question>', 'ask once the model is complete, then exit')
 )
 
 cmd.parse(Bare.argv.slice(isDev ? 2 : 1))
@@ -49,15 +57,69 @@ app.on('update-applied', () =>
 )
 app.on('error', (err) => console.error('[app:error]', err))
 
-process.on('SIGHUP', () => app.exit(129))
-process.on('SIGINT', () => app.exit(130))
-process.on('SIGQUIT', () => app.exit(131))
-process.on('SIGTERM', () => app.exit(143))
+let nodo = null
+const apagar = (code) => {
+  nodo?.stop()
+  return app.exit(code)
+}
+
+process.on('SIGHUP', () => apagar(129))
+process.on('SIGINT', () => apagar(130))
+process.on('SIGQUIT', () => apagar(131))
+process.on('SIGTERM', () => apagar(143))
 
 try {
   await app.ready()
-  console.log('\nCLI ready. Press Ctrl+C to stop.\n')
 } catch (err) {
   console.error('[app:error]', err)
   await app.close().finally(() => Bare.exit(1))
+}
+
+// A partir de acá la app deja de ser el template y es Shard: presta capas, busca a las
+// otras maquinas y dice si entre todas alcanzan para el modelo entero.
+nodo = new Nodo({
+  etiqueta: cmd.flags.label,
+  rpcPort: Number(cmd.flags.port) || undefined,
+  ofreceGB: Number(cmd.flags.offer) || undefined,
+  modelo: cmd.flags.model || undefined,
+  binario: cmd.flags.llama || undefined
+})
+
+const { etiqueta, ramGB, ofreceGB, rpcPort } = nodo.ficha
+
+nodo.on('listening', (info) => {
+  console.log(
+    `\n[${etiqueta}] en ${info.address}, presta ${ofreceGB}GB de ${ramGB}GB, capas en :${rpcPort}`
+  )
+})
+
+nodo.on('peer', (peer) => {
+  console.log(
+    `\n+ ${peer.ficha.etiqueta} (${peer.address}) - ${peer.ficha.ramGB}GB, ${peer.ficha.cores} cores`
+  )
+})
+
+nodo.on('peer-lost', (peer) => {
+  console.log(`\n- ${peer.ficha.etiqueta} (${peer.address}) se fue`)
+})
+
+nodo.on('estado', (plan) => console.log('\n' + banda(plan).join('\n')))
+nodo.on('error', (err) => console.error('[nodo:error]', err.message))
+
+nodo.start()
+
+if (cmd.flags.ask) {
+  let preguntado = false
+  nodo.on('estado', (plan) => {
+    if (!plan.completo || preguntado) return
+    preguntado = true
+    console.log(`\n> ${cmd.flags.ask}\n`)
+    nodo
+      .preguntar(cmd.flags.ask)
+      .on('salida', (txt) => process.stdout.write(txt))
+      .on('error', (err) => console.error(`\nSIN RESPUESTA: ${err.message}`))
+      .on('fin', () => apagar(0))
+  })
+} else {
+  console.log('\nShard corriendo. Ctrl+C para parar.\n')
 }

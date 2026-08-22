@@ -7,6 +7,7 @@
 // que bajarlo (1GB = 15 capas de las 28).
 
 const Nodo = require('../lib/nodo.js')
+const banda = require('../lib/banda.js')
 
 // En Bare no existe `process`; en Node no existe `Bare`. El optional chaining no alcanza:
 // referenciar una variable no declarada lanza ReferenceError, hay que usar typeof.
@@ -42,23 +43,7 @@ nodo.on('peer-lost', (peer) => {
   console.log(`\n*** PEER PERDIDO: ${peer.ficha.etiqueta} (${peer.address}) ***`)
 })
 
-nodo.on('estado', (plan) => {
-  console.log('\n' + '-'.repeat(64))
-  if (plan.completo) {
-    console.log(`MODEL COMPLETE - ${plan.capas}/${plan.capas} capas servidas`)
-  } else {
-    console.log(
-      `MODEL INCOMPLETE - faltan las capas ${plan.faltan.desde}-${plan.faltan.hasta} ` +
-        `(${plan.cubiertas}/${plan.capas} cubiertas)`
-    )
-  }
-  for (const a of plan.asignaciones) {
-    const rango = `${String(a.desde).padStart(2)}-${String(a.hasta).padEnd(2)}`
-    console.log(`  capas ${rango}  ${a.rpc}  ${a.etiqueta}`)
-  }
-  console.log(`  --rpc ${plan.rpc || '(vacio)'}`)
-  console.log('-'.repeat(64) + '\n')
-})
+nodo.on('estado', (plan) => console.log('\n' + banda(plan).join('\n') + '\n'))
 
 nodo.on('error', (err) => console.error(`[${etiqueta}] ERROR:`, err.message))
 
