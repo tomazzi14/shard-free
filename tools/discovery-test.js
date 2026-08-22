@@ -1,6 +1,10 @@
 // Descubrimiento + banda de estado del modelo, entre las máquinas de la red local.
-// Uso:  node tools/discovery-test.js [etiqueta] [puertoRpc]
-//   o:  bare tools/discovery-test.js [etiqueta] [puertoRpc]
+// Uso:  node tools/discovery-test.js [etiqueta] [puertoRpc] [ofreceGB]
+//   o:  bare tools/discovery-test.js [etiqueta] [puertoRpc] [ofreceGB]
+//
+// ofreceGB es cuánta memoria presta esta máquina. Por defecto la mitad de la RAM, que en
+// una laptop moderna alcanza para el modelo entero: para ver el reparto entre varias hay
+// que bajarlo (1GB = 15 capas de las 28).
 
 const LanDiscovery = require('../lib/lan-discovery.js')
 const planificar = require('../lib/shard-plan.js')
@@ -20,14 +24,15 @@ const etiqueta = argv[2] || os.hostname()
 const rpcPort = Number(argv[3]) || 50052
 
 const ramGB = +(os.totalmem() / 1073741824).toFixed(1)
+// La mitad de la RAM deja aire para el resto del sistema.
+const ofreceGB = Number(argv[4]) || +(ramGB / 2).toFixed(1)
 
 const ficha = {
   etiqueta,
   ramGB,
   cores: os.availableParallelism ? os.availableParallelism() : os.cpus().length,
   rpcPort,
-  // Cuánto de esta máquina prestamos. La mitad deja aire para el resto del sistema.
-  ofreceGB: +(ramGB / 2).toFixed(1)
+  ofreceGB
 }
 
 const disco = new LanDiscovery({ id: `${os.hostname()}-${rpcPort}`, ficha })
@@ -58,6 +63,7 @@ function banda() {
 
 disco.on('listening', (info) => {
   console.log(`[${etiqueta}] escuchando en ${info.address}:${info.puerto} (red ${info.cidr})`)
+  console.log(`[${etiqueta}] presta ${ofreceGB}GB de ${ramGB}GB, rpc en :${rpcPort}`)
   banda()
 })
 
