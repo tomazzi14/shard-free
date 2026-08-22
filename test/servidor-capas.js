@@ -137,3 +137,18 @@ test('parar mata el proceso', (t) => {
 
   t.ok(spawn.matado, 'no queda un rpc-server huerfano ocupando el puerto')
 })
+
+test('si el binario no existe, lo dice y no tumba la app', (t) => {
+  t.plan(2)
+  // En Bare spawn lanza de forma sincrona, no avisa por evento.
+  const spawnQueLanza = () => {
+    throw Object.assign(new Error('no such file or directory'), { code: 'ENOENT' })
+  }
+
+  const servidor = servirCapas({ puerto: 50052, spawn: spawnQueLanza, net: netFalso(999) })
+  servidor.on('error', (err) => {
+    t.ok(/no encontre/.test(err.message), 'dice que falta y cual')
+    t.is(err.code, 'ENOENT')
+  })
+  t.teardown(() => servidor.parar())
+})

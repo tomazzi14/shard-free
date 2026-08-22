@@ -44,7 +44,14 @@ function servidorFalso() {
 function nodo(extra = {}) {
   const discovery = new DiscoveryFalso()
   const servidor = servidorFalso()
-  const n = new Nodo({ etiqueta: 'yo', ofreceGB: 1, discovery, servidor, ...extra })
+  const n = new Nodo({
+    etiqueta: 'yo',
+    ofreceGB: 1,
+    discovery,
+    servidor,
+    buscar: (rel) => `/fake/${rel}`, // por defecto, todo instalado
+    ...extra
+  })
   return { discovery, servidor, nodo: n }
 }
 
@@ -154,4 +161,39 @@ test('los errores del descubrimiento salen por el nodo', (t) => {
   n.on('error', (err) => t.is(err.message, 'algo se rompio'))
   n.start()
   discovery.emit('error', new Error('algo se rompio'))
+})
+
+test('una maquina sin llama.cpp no promete capas que no puede servir', (t) => {
+  const { nodo: n } = nodo({ buscar: () => null, ofreceGB: 8 })
+
+  t.is(n.ficha.ofreceGB, 0, 'si no puede servir, ofrece cero')
+  t.absent(n.plan().asignaciones.length, 'y no aparece en el reparto')
+})
+
+test('y lo dice, en vez de morirse callada', (t) => {
+  t.plan(1)
+  const { nodo: n } = nodo({ buscar: () => null })
+
+  n.on('error', (err) => t.ok(/no encontre llama.cpp/.test(err.message)))
+  n.start()
+})
+
+test('preguntar sin el modelo en la maquina da un error, no un crash', (t) => {
+  t.plan(1)
+  const { nodo: n } = nodo({ buscar: (rel) => (rel.endsWith('.gguf') ? null : `/fake/${rel}`) })
+
+  n.preguntar('hola').on('error', (err) => t.ok(/no encontre el modelo/.test(err.message)))
+})
+
+test('las rutas encontradas llegan a la inferencia', (t) => {
+  t.plan(2)
+  const { nodo: n } = nodo({
+    buscar: (rel) => `/donde/${rel}`,
+    inferir: (plan, opciones) => {
+      t.ok(opciones.modelo.endsWith('.gguf'))
+      t.ok(opciones.binario.endsWith('llama-cli'))
+    }
+  })
+
+  n.preguntar('hola')
 })
