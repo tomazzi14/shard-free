@@ -8,6 +8,7 @@ import pkg from './package.json'
 import App from './app.js'
 import Nodo from './lib/nodo.js'
 import banda from './lib/banda.js'
+import Panel from './lib/panel.js'
 
 const appName = pkg.productName || pkg.name
 const isDev = path.basename(Bare.argv[0]) === (isWindows ? 'bare.exe' : 'bare')
@@ -23,7 +24,9 @@ const cmd = command(
   flag('--offer <gb>', 'how much memory this machine lends (default: half its RAM)'),
   flag('--model <path>', 'path to the .gguf'),
   flag('--llama <path>', 'path to llama-cli'),
-  flag('--ask <question>', 'ask once the model is complete, then exit')
+  flag('--ask <question>', 'ask once the model is complete, then exit'),
+  flag('--panel <port>', 'web panel port (default 7777)'),
+  flag('--no-panel', 'run without the web panel')
 )
 
 cmd.parse(Bare.argv.slice(isDev ? 2 : 1))
@@ -61,7 +64,9 @@ app.on('update-applied', () =>
 app.on('error', (err) => console.error('[app:error]', err))
 
 let nodo = null
+let panel = null
 const apagar = (code) => {
+  panel?.stop()
   nodo?.stop()
   return app.exit(code)
 }
@@ -108,6 +113,18 @@ nodo.on('peer-lost', (peer) => {
 
 nodo.on('estado', (plan) => console.log('\n' + banda(plan, pkg.version).join('\n')))
 nodo.on('error', (err) => console.error('[nodo:error]', err.message))
+
+// El panel se levanta antes de arrancar el nodo, para no perderse el primer estado.
+if (cmd.flags.panel !== false) {
+  // Ojo: con --no-panel, paparam deja flags.panel en true, y Number(true) es 1. Sin este
+  // typeof, el panel termina intentando escuchar en el puerto 1.
+  const puerto = typeof cmd.flags.panel === 'string' ? Number(cmd.flags.panel) : undefined
+
+  panel = new Panel({ nodo, puerto, version: pkg.version })
+  panel.on('error', (err) => console.error('[panel:error]', err.message))
+  panel.start()
+  console.log(`Panel en http://localhost:${panel.puerto}`)
+}
 
 nodo.start()
 
