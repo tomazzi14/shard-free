@@ -48,7 +48,10 @@ const app = new App({
   name: isWindows ? appName + '.exe' : appName
 })
 
-app.on('message', (message) => console.log(message))
+// El worker del template avisa cosas suyas ('Hello from worker', dónde guarda el estado).
+// No aportan nada al usuario y ensucian la banda, así que no se imprimen. Lo que sí importa
+// de ese worker son las actualizaciones, que tienen sus propios eventos acá abajo.
+app.on('message', () => {})
 app.on('updating', () => console.log('[updater] getting new update'))
 app.on('updating-delta', (delta) => console.log('[updater]', delta))
 app.on('updated', () => console.log('[updater] update complete... applying'))
