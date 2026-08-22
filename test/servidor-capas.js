@@ -152,3 +152,19 @@ test('si el binario no existe, lo dice y no tumba la app', (t) => {
   })
   t.teardown(() => servidor.parar())
 })
+
+test('un puerto tomado por otro proceso se distingue de un arranque exitoso', (t) => {
+  t.plan(1)
+  const spawn = spawnFalso()
+  // El caso feo: el rpc-server viejo sigue escuchando, asi que la sonda lo encuentra
+  // abierto y creeria que el nuestro arranco. Su queja es la unica senal.
+  const servidor = servirCapas({ puerto: 50052, spawn, net: netFalso(1) })
+
+  servidor.on('listo', () => t.fail('no arranco el nuestro, es el de otro'))
+  servidor.on('error', (err) => {
+    t.ok(/ya lo tiene otro proceso/.test(err.message))
+    servidor.parar()
+  })
+
+  spawn.stdout('Failed to create server socket\n')
+})
