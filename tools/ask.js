@@ -2,19 +2,9 @@
 // Uso:  node tools/ask.js "tu pregunta" [etiqueta] [puertoRpc] [ofreceGB]
 //
 // Espera a que el modelo esté completo antes de preguntar. Si al cabo de ESPERA_MAX
-// siguen faltando capas, no inventa una respuesta: dice cuáles faltan y se va.
+// siguen faltando capas, no inventa una respuesta: dice cuáles faltan y sale con 1.
 
-const LanDiscovery = require('../lib/lan-discovery.js')
-const planificar = require('../lib/shard-plan.js')
-const inferir = require('../lib/inferencia.js')
-
-const os = (() => {
-  try {
-    return require('bare-os')
-  } catch {
-    return require('os')
-  }
-})()
+const Nodo = require('../lib/nodo.js')
 
 // En Bare no hay `process`. bare-process lo emula; para el argv seguimos usando Bare.argv,
 // que es lo que tenemos verificado.
@@ -30,70 +20,67 @@ const escribir = (txt) => proc.stdout.write(txt)
 const salir = (code) => (typeof Bare !== 'undefined' ? Bare.exit(code) : proc.exit(code))
 const argv = typeof Bare !== 'undefined' ? Bare.argv.slice(1) : process.argv
 
-const pregunta = argv[2]
-const etiqueta = argv[3] || os.hostname()
-const rpcPort = Number(argv[4]) || 50052
-const ramGB = +(os.totalmem() / 1073741824).toFixed(1)
-const ofreceGB = Number(argv[5]) || +(ramGB / 2).toFixed(1)
-
-const MODELO = './models/Llama-3.2-3B-Instruct-Q4_K_M.gguf'
 const ESPERA_MAX = 30000
+const pregunta = argv[2]
 
 if (!pregunta) {
   console.error('falta la pregunta: node tools/ask.js "cual es la capital de Argentina?"')
   salir(1)
 }
 
-const ficha = { etiqueta, ramGB, rpcPort, ofreceGB }
-const disco = new LanDiscovery({ id: `${os.hostname()}-${rpcPort}`, ficha })
-const propio = { id: disco.id, address: '127.0.0.1', ficha }
+const nodo = new Nodo({
+  etiqueta: argv[3],
+  rpcPort: Number(argv[4]) || 50052,
+  ofreceGB: Number(argv[5]) || undefined
+})
 
-const plan = () => planificar({ peers: [propio, ...disco.peers.values()] })
-
+const { etiqueta, ofreceGB, rpcPort } = nodo.ficha
 let preguntado = false
 
 function preguntar() {
   if (preguntado) return
   preguntado = true
 
-  const p = plan()
+  const plan = nodo.plan()
   console.log('')
-  for (const a of p.asignaciones) {
-    console.log(
-      `  capas ${String(a.desde).padStart(2)}-${String(a.hasta).padEnd(2)}  ${a.rpc}  ${a.etiqueta}`
-    )
+  for (const a of plan.asignaciones) {
+    const rango = `${String(a.desde).padStart(2)}-${String(a.hasta).padEnd(2)}`
+    console.log(`  capas ${rango}  ${a.rpc}  ${a.etiqueta}`)
   }
   console.log(`\n> ${pregunta}\n`)
 
-  inferir(p, { modelo: MODELO, prompt: pregunta, nPredict: 64 })
+  nodo
+    .preguntar(pregunta, { nPredict: 64 })
     .on('salida', escribir)
     .on('error', (err) => {
       console.error(`\nSIN RESPUESTA: ${err.message}`)
-      disco.stop()
+      nodo.stop()
       salir(1)
     })
     .on('fin', () => {
-      console.log('')
-      disco.stop()
+      nodo.stop()
       salir(0)
     })
 }
 
-disco.on('listening', () => {
+nodo.on('listening', () => {
   console.log(`[${etiqueta}] presta ${ofreceGB}GB, rpc en :${rpcPort}. Buscando peers...`)
 })
 
-disco.on('peer', (peer) => {
-  const p = plan()
+nodo.on('peer', (peer) => {
+  const plan = nodo.plan()
   console.log(
-    `[${etiqueta}] + ${peer.ficha.etiqueta} (${peer.address}) -> ${p.cubiertas}/${p.capas} capas`
+    `[${etiqueta}] + ${peer.ficha.etiqueta} (${peer.address}) -> ${plan.cubiertas}/${plan.capas} capas`
   )
-  if (p.completo) preguntar()
 })
 
-disco.on('error', (err) => console.error(`[${etiqueta}] ERROR:`, err.message))
+nodo.on('estado', (plan) => {
+  if (plan.completo) preguntar()
+})
 
-disco.start()
+nodo.on('error', (err) => console.error(`[${etiqueta}] ERROR:`, err.message))
 
-// Si nadie más aparece, preguntamos igual: inferir() se va a negar y va a decir qué falta.
+nodo.start()
+
+// Si nadie más aparece, preguntamos igual: la inferencia se va a negar y va a decir qué falta.
 setTimeout(preguntar, ESPERA_MAX)
