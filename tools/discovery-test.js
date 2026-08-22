@@ -4,8 +4,18 @@
 
 const LanDiscovery = require('../lib/lan-discovery.js')
 
-const os = (() => { try { return require('bare-os') } catch { return require('os') } })()
-const etiqueta = process?.argv[2] || Bare?.argv[2] || os.hostname()
+const os = (() => {
+  try {
+    return require('bare-os')
+  } catch {
+    return require('os')
+  }
+})()
+
+// En Bare no existe `process`; en Node no existe `Bare`. El optional chaining no alcanza:
+// referenciar una variable no declarada lanza ReferenceError, hay que usar typeof.
+const argv = typeof Bare !== 'undefined' ? Bare.argv.slice(1) : process.argv
+const etiqueta = argv[2] || os.hostname()
 
 const disco = new LanDiscovery({
   id: `${os.hostname()}-${Math.random().toString(16).slice(2, 8)}`,
@@ -27,7 +37,9 @@ disco.on('sweep', (info) => {
 
 disco.on('peer', (peer) => {
   console.log(`\n*** PEER ENCONTRADO: ${peer.ficha.etiqueta} en ${peer.address} ***`)
-  console.log(`    ${peer.ficha.ramGB}GB RAM, ${peer.ficha.cores} cores, rpc:${peer.ficha.rpcPort}\n`)
+  console.log(
+    `    ${peer.ficha.ramGB}GB RAM, ${peer.ficha.cores} cores, rpc:${peer.ficha.rpcPort}\n`
+  )
 })
 
 disco.on('peer-lost', (peer) => {

@@ -8,7 +8,7 @@
   "scripts": {
     "format": "prettier . --write",
     "test": "brittle-bare test/index.js",
-    "lint": "prettier . --check && lunte",
+    "lint": "prettier . --check && lunte lib tools test workers scripts app.js bin.mjs",
     "start": "bare bin.mjs --no-updates",
     "make": "node scripts/make.js",
     "make:darwin-arm64": "bare-build --name hello-pear-bare --standalone --host darwin-arm64 --out ./out/darwin-arm64 bin.mjs",

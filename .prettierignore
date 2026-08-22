@@ -1,0 +1,6 @@
+.claude/
+out/
+node_modules/
+llama.cpp/
+models/
+package-lock.json

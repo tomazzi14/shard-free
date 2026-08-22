@@ -6,3 +6,6 @@ out/
 # Dependencias externas pesadas (se reconstruyen, no se versionan)
 llama.cpp/
 models/
+
+# worktrees y estado local del agente
+.claude/
