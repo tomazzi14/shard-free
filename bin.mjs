@@ -25,7 +25,9 @@ const cmd = command(
   flag('--model <path>', 'path to the .gguf'),
   flag('--llama <path>', 'path to llama-cli'),
   flag('--ask <question>', 'ask once the model is complete, then exit'),
-  flag('--panel <port>', 'web panel port (default 7777)'),
+  // --panel no puede llevar valor: al declarar --no-panel, paparam trata a --panel como
+  // booleano y el numero queda como argumento suelto. El puerto va por su propio flag.
+  flag('--web <port>', 'web panel port (default 7777)'),
   flag('--no-panel', 'run without the web panel')
 )
 
@@ -116,11 +118,7 @@ nodo.on('error', (err) => console.error('[nodo:error]', err.message))
 
 // El panel se levanta antes de arrancar el nodo, para no perderse el primer estado.
 if (cmd.flags.panel !== false) {
-  // Ojo: con --no-panel, paparam deja flags.panel en true, y Number(true) es 1. Sin este
-  // typeof, el panel termina intentando escuchar en el puerto 1.
-  const puerto = typeof cmd.flags.panel === 'string' ? Number(cmd.flags.panel) : undefined
-
-  panel = new Panel({ nodo, puerto, version: pkg.version })
+  panel = new Panel({ nodo, puerto: Number(cmd.flags.web) || undefined, version: pkg.version })
   panel.on('error', (err) => console.error('[panel:error]', err.message))
   panel.start()
   console.log(`Panel en http://localhost:${panel.puerto}`)

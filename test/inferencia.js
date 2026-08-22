@@ -39,7 +39,11 @@ function spawnFalso() {
   return fn
 }
 
-const opciones = (spawn) => ({ modelo: '/m.gguf', prompt: 'hola', spawn })
+const opciones = (spawn) => ({
+  modelo: '/m.gguf',
+  prompt: 'cual es la capital de Argentina?',
+  spawn
+})
 
 test('los argumentos salen del plan, no escritos a mano', (t) => {
   const args = construirArgs(completo, { modelo: '/m.gguf', prompt: 'hola' })
@@ -82,10 +86,12 @@ test('lo que genera el modelo se emite a medida que sale', (t) => {
   const trozos = []
   inferir(completo, opciones(spawn)).on('salida', (s) => trozos.push(s))
 
-  spawn.stdout('Buenos ')
-  spawn.stdout('Aires')
+  // El eco del prompt es lo que marca donde empieza la respuesta.
+  spawn.stdout('> cual es la capital de Argentina?\nBuenos Aires es la ')
+  spawn.stdout('capital.\n[ Prompt: 1 t/s ]')
 
-  t.alike(trozos, ['Buenos ', 'Aires'], 'llega en streaming, no al final')
+  t.ok(trozos.length > 1, 'llega en streaming, no todo junto al final')
+  t.is(trozos.join('').trim(), 'Buenos Aires es la capital.')
 })
 
 test('los logs de llama.cpp no se mezclan con la respuesta', (t) => {
@@ -119,4 +125,63 @@ test('termina bien y avisa', (t) => {
 
   inferir(completo, opciones(spawn)).on('fin', () => t.pass('emitio fin'))
   spawn.salir(0)
+})
+
+// La salida real de llama-cli, tal cual la capturamos del proceso.
+const CRUDO =
+  '\n\nLoading model... |\b-\b\\\b|\b/\b \b\n\n' +
+  '▄▄ ▄▄\n██ ██\n\n' +
+  'build      : b1-b21e4de\nmodel      : ./models/Llama-3.2-3B-Instruct-Q4_K_M.gguf\n\n' +
+  'available commands:\n  /exit or Ctrl+C     stop or exit\n\n\n' +
+  '> cual es la capital de Argentina?\n' +
+  'La capital de Argentina es Buenos Aires.\n\n' +
+  '[ Prompt: 165.7 t/s | Generation: 54.3 t/s ]\n\n\nExiting...'
+
+const PREGUNTA = 'cual es la capital de Argentina?'
+
+// Deja pasar la salida en pedazos de n caracteres, como llega de verdad.
+function filtrar(texto, n) {
+  const filtro = new inferir.Filtro(PREGUNTA)
+  let salida = ''
+  for (let i = 0; i < texto.length; i += n) salida += filtro.procesar(texto.slice(i, i + n))
+  return salida
+}
+
+test('del ruido de llama-cli sale solo la respuesta', (t) => {
+  t.is(filtrar(CRUDO, CRUDO.length).trim(), 'La capital de Argentina es Buenos Aires.')
+})
+
+test('la respuesta sale igual venga como venga cortada', (t) => {
+  for (const n of [1, 3, 7, 64, 500]) {
+    t.is(
+      filtrar(CRUDO, n).trim(),
+      'La capital de Argentina es Buenos Aires.',
+      `cortando cada ${n} caracteres`
+    )
+  }
+})
+
+test('el logo y las estadisticas no pasan', (t) => {
+  const salida = filtrar(CRUDO, 40)
+
+  t.absent(salida.includes('build'), 'nada del encabezado')
+  t.absent(salida.includes('/exit'), 'ni la lista de comandos')
+  t.absent(salida.includes('Prompt:'), 'ni las estadisticas del final')
+  t.absent(salida.includes('Exiting'), 'ni el saludo de salida')
+})
+
+test('la salida cruda sigue disponible para depurar', (t) => {
+  t.plan(2)
+  const spawn = spawnFalso()
+  const crudos = []
+  const limpios = []
+
+  inferir(completo, opciones(spawn))
+    .on('crudo', (c) => crudos.push(c))
+    .on('salida', (s) => limpios.push(s))
+
+  spawn.stdout(CRUDO)
+
+  t.ok(crudos[0].includes('build'), 'nada se tira: el crudo va entero')
+  t.absent(limpios.join('').includes('build'), 'pero al panel va solo la respuesta')
 })
