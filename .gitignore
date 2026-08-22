@@ -2,3 +2,7 @@ node_modules/
 dist/
 out/
 .DS_Store
+
+# Dependencias externas pesadas (se reconstruyen, no se versionan)
+llama.cpp/
+models/
