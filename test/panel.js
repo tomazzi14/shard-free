@@ -112,6 +112,26 @@ test('un peer que entra viaja al navegador como estado nuevo', (t) => {
   })
 })
 
+test('un peer que empieza a ofrecer capas lo dice en el log', (t) => {
+  t.plan(3)
+  const { panel, nodo, puerto } = levantar()
+
+  panel.servidor.on('listening', () => {
+    escuchar(puerto(), (recibidos, req) => {
+      if (recibidos.length === 1) {
+        // Un peer arranca en 0GB y sube cuando su servidor de capas esta listo.
+        nodo.emit('peer-cambio', peer('b', 2, '10.0.0.2'))
+        return
+      }
+      t.is(recibidos[1].nivel, 'ok')
+      t.ok(/b now offers 2GB/.test(recibidos[1].texto), 'sin esto la banda cambia sin explicacion')
+      t.ok(recibidos[1].t > 0, 'la hora viaja con la linea, para el que reconecta')
+      req.destroy()
+      panel.stop()
+    })
+  })
+})
+
 test('la caida de un peer llega al log con su nivel', (t) => {
   t.plan(2)
   const { panel, nodo, puerto } = levantar()
@@ -123,7 +143,7 @@ test('la caida de un peer llega al log con su nivel', (t) => {
         return
       }
       t.is(recibidos[1].nivel, 'mal', 'rojo en el panel')
-      t.ok(/se cayo/.test(recibidos[1].texto))
+      t.ok(/left/.test(recibidos[1].texto))
       req.destroy()
       panel.stop()
     })
@@ -137,10 +157,10 @@ test('los errores del nodo no se los guarda el panel', (t) => {
   panel.servidor.on('listening', () => {
     escuchar(puerto(), (recibidos, req) => {
       if (recibidos.length === 1) {
-        nodo.emit('error', new Error('el puerto ya esta ocupado'))
+        nodo.emit('error', new Error('port 7777 is already taken'))
         return
       }
-      t.is(recibidos[1].texto, 'el puerto ya esta ocupado', 'el usuario lo ve, no queda oculto')
+      t.is(recibidos[1].texto, 'port 7777 is already taken', 'el usuario lo ve, no queda oculto')
       req.destroy()
       panel.stop()
     })
@@ -194,14 +214,14 @@ test('si faltan capas el panel recibe cuales, no un error generico', (t) => {
         return
       }
       if (ultimo.tipo === 'pregunta') {
-        const err = new Error('modelo incompleto: faltan las capas 15-27')
+        const err = new Error('model incomplete: layers 15-27 are missing')
         err.faltan = { desde: 15, hasta: 27 }
         nodo.ultima.emit('error', err)
         return
       }
       if (ultimo.tipo === 'sin-respuesta') {
         t.alike(ultimo.faltan, { desde: 15, hasta: 27 }, 'para pintar el rango en rojo')
-        t.ok(/faltan las capas/.test(ultimo.motivo))
+        t.ok(/are missing/.test(ultimo.motivo))
         req.destroy()
         panel.stop()
       }
@@ -230,7 +250,7 @@ test('un panel que no puede escuchar lo dice, no falla en silencio', (t) => {
   ocupado.servidor.on('listening', () => {
     const chocado = new Panel({ nodo: new NodoFalso(), puerto: ocupado.servidor.address().port })
     chocado.on('error', (err) => {
-      t.ok(/ya esta ocupado/.test(err.message), 'dice por que no hay panel')
+      t.ok(/is already taken/.test(err.message), 'dice por que no hay panel')
       chocado.stop()
       ocupado.stop()
     })

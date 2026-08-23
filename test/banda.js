@@ -13,13 +13,13 @@ const incompleto = planificar({ peers: [peer('a', 1, '10.0.0.1')] })
 const vacio = planificar({ peers: [] })
 
 test('con el modelo completo dice cuantas capas se sirven', (t) => {
-  t.is(banda.titulo(completo), 'MODEL COMPLETE - 28/28 capas servidas')
+  t.is(banda.titulo(completo), 'MODEL COMPLETE - 28/28 layers served')
 })
 
 test('con el modelo incompleto nombra el rango que falta', (t) => {
   t.is(
     banda.titulo(incompleto),
-    'MODEL INCOMPLETE - faltan las capas 15-27 (15/28 cubiertas)',
+    'MODEL INCOMPLETE - layers 15-27 missing (15/28 covered)',
     'el rango exacto es el punto: no alcanza con decir que falta algo'
   )
 })
@@ -27,8 +27,8 @@ test('con el modelo incompleto nombra el rango que falta', (t) => {
 test('lista una linea por maquina, con sus capas', (t) => {
   const lineas = banda(completo)
 
-  t.ok(lineas.some((l) => l.includes('capas  0-14') && l.includes('10.0.0.1:50052')))
-  t.ok(lineas.some((l) => l.includes('capas 15-27') && l.includes('10.0.0.2:50052')))
+  t.ok(lineas.some((l) => l.includes('layers  0-14') && l.includes('10.0.0.1:50052')))
+  t.ok(lineas.some((l) => l.includes('layers 15-27') && l.includes('10.0.0.2:50052')))
 })
 
 test('sin peers no imprime una lista vacia enganosa', (t) => {
@@ -36,7 +36,7 @@ test('sin peers no imprime una lista vacia enganosa', (t) => {
 
   t.ok(banda.titulo(vacio).startsWith('MODEL INCOMPLETE'))
   t.ok(
-    lineas.some((l) => l.includes('(vacio)')),
+    lineas.some((l) => l.includes('(none)')),
     'deja claro que no hay a quien preguntarle'
   )
 })

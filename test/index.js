@@ -51,7 +51,7 @@ test('la /20 real del proyecto cubre las dos laptops', (t) => {
 })
 
 test('rechaza subredes demasiado grandes', (t) => {
-  t.exception(() => ipsDeSubred('10.0.0.1', '255.255.0.0'), /demasiado grande/)
+  t.exception(() => ipsDeSubred('10.0.0.1', '255.255.0.0'), /subnet too large/)
 })
 
 test('un HELLO ajeno se responde y el peer queda registrado', (t) => {
@@ -228,7 +228,7 @@ test('un puerto ocupado se explica, no tumba la app', (t) => {
   disco.start()
 
   t.is(vistos.length, 1, 'sale por el evento, no como excepcion sin atrapar')
-  t.ok(/puerto 41234 ya esta ocupado/.test(vistos[0]), 'dice cual es el puerto y por que')
+  t.ok(/port 41234 is already taken/.test(vistos[0]), 'dice cual es el puerto y por que')
   t.absent(disco.activo, 'y no se queda creyendo que esta escuchando')
 })
 

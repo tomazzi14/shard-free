@@ -70,7 +70,7 @@ test('con el modelo incompleto la inferencia se niega a arrancar', (t) => {
   const spawn = spawnFalso()
 
   inferir(incompleto, opciones(spawn)).on('error', (err) => {
-    t.ok(/faltan las capas 15-27/.test(err.message), 'dice exactamente que falta')
+    t.ok(/layers 15-27 are missing/.test(err.message), 'dice exactamente que falta')
     t.alike(err.faltan, { desde: 15, hasta: 27 }, 'y lo trae estructurado, para el panel')
     t.is(spawn.llamadas.length, 0, 'no se lanzo nada')
   })
@@ -117,7 +117,7 @@ test('un peer que se cae en plena inferencia se reporta, no se traga', (t) => {
   const spawn = spawnFalso()
 
   inferir(completo, opciones(spawn)).on('error', (err) => {
-    t.ok(/codigo 1/.test(err.message), 'el fallo de llama-cli llega al log del panel')
+    t.ok(/code 1/.test(err.message), 'el fallo de llama-cli llega al log del panel')
   })
 
   spawn.salir(1)
@@ -143,7 +143,7 @@ test('salir con codigo 0 sin contestar nada no es terminar bien', (t) => {
   inferir(completo, opciones(spawn))
     .on('fin', () => t.fail('no contesto nada, no puede ser un final feliz'))
     .on('error', (err) => {
-      t.ok(/no devolvio nada/.test(err.message))
+      t.ok(/returned nothing/.test(err.message))
       t.ok(/Failed to connect/.test(err.message), 'y arrastra la queja de llama.cpp')
     })
 

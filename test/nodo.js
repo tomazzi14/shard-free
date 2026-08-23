@@ -102,7 +102,7 @@ test('si el servidor de capas se cae, dejamos de ofrecerlas', (t) => {
   const estados = []
   n.on('estado', (plan) => estados.push(plan))
 
-  servidor.romper('el servidor de capas se cayo (codigo 0)')
+  servidor.romper('the layer server died (code 0)')
 
   t.is(n.ficha.ofreceGB, 0, 'seguir anunciando manda a las otras contra capas fantasma')
   t.is(estados[estados.length - 1].cubiertas, 0, 'y el estado nuevo sale enseguida')
@@ -179,9 +179,9 @@ test('si el servidor de capas se rompe, el error sale por el nodo', (t) => {
   t.plan(1)
   const { nodo: n, servidor } = nodo()
 
-  n.on('error', (err) => t.is(err.message, 'el servidor de capas se cayo (codigo 1)'))
+  n.on('error', (err) => t.is(err.message, 'the layer server died (code 1)'))
   n.start()
-  servidor.emisor.emit('error', new Error('el servidor de capas se cayo (codigo 1)'))
+  servidor.emisor.emit('error', new Error('the layer server died (code 1)'))
 })
 
 test('los errores del descubrimiento salen por el nodo', (t) => {
@@ -206,7 +206,7 @@ test('y lo dice, en vez de morirse callada', (t) => {
   t.plan(1)
   const { nodo: n } = nodo({ buscar: () => null })
 
-  n.on('error', (err) => t.ok(/no encontre llama.cpp/.test(err.message)))
+  n.on('error', (err) => t.ok(/llama\.cpp is not here/.test(err.message)))
   n.start()
 })
 
@@ -214,7 +214,9 @@ test('preguntar sin el modelo en la maquina da un error, no un crash', (t) => {
   t.plan(1)
   const { nodo: n } = nodo({ buscar: (rel) => (rel.endsWith('.gguf') ? null : `/fake/${rel}`) })
 
-  n.preguntar('hola').on('error', (err) => t.ok(/no encontre el modelo/.test(err.message)))
+  n.preguntar('hola').on('error', (err) =>
+    t.ok(/the \.gguf model is not on this machine/.test(err.message))
+  )
 })
 
 test('las rutas encontradas llegan a la inferencia', (t) => {

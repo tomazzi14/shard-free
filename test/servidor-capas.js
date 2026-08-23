@@ -88,7 +88,7 @@ test('si el puerto nunca abre, lo dice en vez de esperar para siempre', (t) => {
 
   const servidor = servirCapas({ puerto: 50052, spawn: spawnFalso(), net: netFalso(999), ahora })
   servidor.on('error', (err) => {
-    t.ok(/no abrio el puerto 50052/.test(err.message))
+    t.ok(/never opened port 50052/.test(err.message))
     servidor.parar()
   })
 })
@@ -100,7 +100,7 @@ test('si se cae mientras servia, se reporta', (t) => {
 
   servidor.on('listo', () => spawn.salir(1))
   servidor.on('error', (err) => {
-    t.ok(/se cayo/.test(err.message))
+    t.ok(/died/.test(err.message))
     servidor.parar()
   })
 })
@@ -111,7 +111,7 @@ test('si nunca arranco, lo dice distinto', (t) => {
 
   const servidor = servirCapas({ puerto: 50052, spawn, net: netFalso(999) })
   servidor.on('error', (err) => {
-    t.ok(/no llego a arrancar/.test(err.message), 'un puerto ocupado se distingue de una caida')
+    t.ok(/never started/.test(err.message), 'un puerto ocupado se distingue de una caida')
     servidor.parar()
   })
 
@@ -147,7 +147,7 @@ test('si el binario no existe, lo dice y no tumba la app', (t) => {
 
   const servidor = servirCapas({ puerto: 50052, spawn: spawnQueLanza, net: netFalso(999) })
   servidor.on('error', (err) => {
-    t.ok(/no encontre/.test(err.message), 'dice que falta y cual')
+    t.ok(/is not there/.test(err.message), 'dice que falta y cual')
     t.is(err.code, 'ENOENT')
   })
   t.teardown(() => servidor.parar())
@@ -162,7 +162,7 @@ test('un puerto tomado por otro proceso se distingue de un arranque exitoso', (t
 
   servidor.on('listo', () => t.fail('no arranco el nuestro, es el de otro'))
   servidor.on('error', (err) => {
-    t.ok(/ya lo tiene otro proceso/.test(err.message))
+    t.ok(/held by another process/.test(err.message))
     servidor.parar()
   })
 
