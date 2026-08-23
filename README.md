@@ -106,19 +106,23 @@ each other, and the errors are misleading — see _Things that bit us_ below.
 
 ```mermaid
 flowchart LR
-  subgraph uno["laptop1 — asks and serves"]
-    panel["panel :7777<br/>HTTP + SSE"]
-    nodo1["shard node<br/>UDP :41234"]
-    cli["llama-cli<br/>--rpc 50053,50052"]
-    rpc1["ggml-rpc-server :50053<br/>layers 0-14"]
+  subgraph lan["the LAN — nothing here is a server"]
+    direction LR
+    subgraph uno["laptop1 · asks and serves"]
+      panel["panel :7777<br/>HTTP + SSE"]
+      nodo1["shard node<br/>UDP :41234"]
+      cli["llama-cli<br/>--rpc 50053,50052"]
+      rpc1["ggml-rpc-server :50053<br/>layers 0-14"]
+    end
+    subgraph dos["laptop2 · serves"]
+      nodo2["shard node<br/>UDP :41234"]
+      rpc2["ggml-rpc-server :50052<br/>layers 15-27"]
+    end
   end
 
-  subgraph dos["laptop2 — serves"]
-    nodo2["shard node<br/>UDP :41234"]
-    rpc2["ggml-rpc-server :50052<br/>layers 15-27"]
+  subgraph fuera["off the LAN"]
+    semilla["public seeder<br/>a DigitalOcean VM with a public IP<br/>holds a copy of the app bundle"]
   end
-
-  semilla["a peer with a public IP<br/>reseeds the app bundle"]
 
   nodo1 <-->|"UDP sweep: label, RAM, GB offered, rpc port"| nodo2
   nodo1 -->|spawns| rpc1
@@ -127,12 +131,16 @@ flowchart LR
   cli --> rpc1
   cli -->|"RPC over TCP, across the LAN"| rpc2
   semilla -.->|"pear install · OTA deltas"| nodo1
-  semilla -.-> nodo2
+  semilla -.->|"pear install · OTA deltas"| nodo2
 ```
 
 Both machines run the same binary. The only difference between them is that one of them is
 the one you asked from: it starts `llama-cli` and points it at every layer server it knows,
 its own included. Any node can be that one.
+
+The dotted lines are the only ones that leave the LAN, and they carry the **app**, never a
+prompt and never a tensor. Inference happens entirely between the machines in the room: if
+the seeder is unplugged mid-conversation, nothing stops.
 
 ## What each piece does
 
