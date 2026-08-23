@@ -7,7 +7,7 @@
 <meta name="description" content="An LLM whose layers live on different machines. No server, no coordinator. If a machine leaves, the model cannot think.">
 <style>
   :root {
-    --bg: #0B0B0A;          /* negro cálido, no azulado: papel quemado, no pantalla */
+    --bg: #0B0B0A;
     --caja: #131311;
     --linea: #2A2823;
     --hueso: #E8E4D9;
@@ -23,93 +23,108 @@
     margin: 0; padding: 0;
     background: var(--bg); color: var(--hueso);
     font-family: var(--mono); font-size: 15px; line-height: 1.65;
-    /* papel cuadriculado, apenas visible */
     background-image:
-      linear-gradient(rgba(255,255,255,0.016) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.016) 1px, transparent 1px);
-    background-size: 28px 28px;
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 32px 32px;
   }
-  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 0 28px; }
   a { color: var(--vivo); }
 
-  /* ---- cintillo superior: encabezado de documento ---- */
-  .cintillo {
-    border-bottom: 1px solid var(--linea); background: rgba(0,0,0,0.4);
-    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--khaki);
+  /* ---- barra de clasificación, arriba y abajo ---- */
+  .clasif {
+    text-align: center; font-size: 10px; letter-spacing: 0.42em;
+    text-transform: uppercase; color: var(--khaki);
+    padding: 8px 0; border-bottom: 1px solid var(--linea);
+    background: rgba(0,0,0,0.45);
   }
-  .cintillo .wrap { display: flex; gap: 16px; padding-top: 9px; padding-bottom: 9px; }
-  .cintillo .der { margin-left: auto; color: var(--vivo); }
-  .cintillo .sep { color: var(--linea); }
+  .clasif.pie { border-bottom: 0; border-top: 1px solid var(--linea); }
 
-  /* ---- hero ---- */
-  header { padding: 64px 0 40px; position: relative; }
-  .marco { position: relative; padding: 30px 28px; border: 1px solid var(--linea); }
-  /* escuadras en las esquinas */
-  .marco::before, .marco::after {
-    content: ''; position: absolute; width: 14px; height: 14px; border: 2px solid var(--vivo);
+  /* ---- encabezado de hoja ---- */
+  .hoja {
+    display: flex; flex-wrap: wrap; gap: 18px;
+    padding: 12px 0; border-bottom: 1px solid var(--linea);
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--khaki);
   }
-  .marco::before { top: -1px; left: -1px; border-right: 0; border-bottom: 0; }
-  .marco::after { bottom: -1px; right: -1px; border-left: 0; border-top: 0; }
+  .hoja .der { margin-left: auto; }
+  .hoja b { color: var(--hueso); font-weight: 400; }
 
-  .desig { font-size: 11px; letter-spacing: 0.24em; color: var(--khaki); text-transform: uppercase; }
-  .logo {
-    font-size: 66px; font-weight: 700; letter-spacing: 0.04em; line-height: 1;
-    margin-top: 10px; text-transform: uppercase;
-  }
-  .logo i { color: var(--vivo); font-style: normal; }
-  .lema {
-    font-size: 15px; letter-spacing: 0.2em; text-transform: uppercase;
-    margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--linea);
-  }
-  .bajada { font-size: 15px; color: var(--khaki); margin-top: 16px; max-width: 640px; }
-  .bajada b { color: var(--hueso); font-weight: 400; }
+  /* ---- héroe ---- */
+  header { padding: 84px 0 60px; position: relative; }
+  /* marcas de registro en las esquinas del héroe */
+  .cruz { position: absolute; color: var(--linea); font-size: 15px; line-height: 1; }
+  .cruz.ai { top: 34px; left: -6px; }
+  .cruz.ad { top: 34px; right: -6px; }
+  .cruz.bi { bottom: 18px; left: -6px; }
+  .cruz.bd { bottom: 18px; right: -6px; }
 
-  /* sello inclinado */
-  .sello {
-    position: absolute; top: 34px; right: -6px; transform: rotate(-9deg);
-    border: 2px solid var(--vivo); color: var(--vivo); opacity: 0.5;
-    padding: 7px 14px; font-size: 11px; letter-spacing: 0.16em; text-align: center;
-    text-transform: uppercase; line-height: 1.35;
+  .kicker {
+    font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase;
+    color: var(--vivo); margin-bottom: 26px;
   }
+  .kicker span { color: var(--linea); margin: 0 10px; }
 
-  .botones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+  h1 {
+    margin: 0; font-size: clamp(34px, 7.2vw, 82px); line-height: 1.02;
+    font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase;
+  }
+  h1 .op { color: var(--khaki); }
+
+  .sub {
+    margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--linea);
+    font-size: 16px; color: var(--khaki); max-width: 620px;
+  }
+  .sub b { color: var(--hueso); font-weight: 400; }
+
+  .botones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
   .boton {
-    display: inline-block; text-decoration: none; padding: 11px 22px;
-    font-weight: 700; font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase;
+    display: inline-block; text-decoration: none; padding: 13px 26px;
+    font-weight: 700; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
   }
   .boton.lleno { background: var(--vivo); color: #0B0B0A; }
   .boton.vacio { border: 1px solid var(--linea); color: var(--hueso); }
   .boton.vacio:hover { border-color: var(--vivo); color: var(--vivo); }
 
-  /* ---- lectura de estado ---- */
-  .demo { margin: 32px 0 0; }
-  .rotulo-demo {
-    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--khaki); margin-bottom: 7px;
+  /* ---- hoja de datos ---- */
+  .datos {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    border: 1px solid var(--linea); border-bottom: 0;
   }
-  .banda {
-    padding: 18px 22px; border: 1px solid;
-    font-size: 21px; font-weight: 700; letter-spacing: 0.04em;
+  .datos div {
+    padding: 15px 18px; border-bottom: 1px solid var(--linea); border-right: 1px solid var(--linea);
   }
-  .banda small {
-    display: block; margin-top: 7px; font-size: 12px; font-weight: 400;
-    letter-spacing: 0.04em; opacity: 0.75;
+  .datos div:last-child { border-right: 0; }
+  .datos dt {
+    font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--khaki); margin-bottom: 6px;
   }
+  .datos dd { margin: 0; font-size: 14px; color: var(--hueso); }
+
+  /* ---- figuras ---- */
+  .figura { border: 1px solid var(--linea); background: var(--caja); margin-bottom: 18px; }
+  .figura .cabecera {
+    display: flex; gap: 14px; align-items: center;
+    padding: 9px 16px; border-bottom: 1px solid var(--linea);
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--khaki);
+  }
+  .figura .cabecera b { color: var(--vivo); font-weight: 700; }
+  .figura .cabecera .der { margin-left: auto; }
+  .figura .interior { padding: 20px; }
+
+  .banda { padding: 16px 20px; border: 1px solid; font-size: 19px; font-weight: 700;
+           letter-spacing: 0.04em; }
+  .banda small { display: block; margin-top: 7px; font-size: 12px; font-weight: 400;
+                 letter-spacing: 0.04em; opacity: 0.75; }
   .banda.muerta { color: var(--muerto); border-color: var(--muerto); background: rgba(216,65,47,0.06); }
   .banda.viva { color: var(--vivo); border-color: var(--vivo); background: rgba(255,176,0,0.06); }
 
-  .tira { display: flex; gap: 2px; margin-top: 10px; }
-  .capa { flex: 1; height: 38px; }
+  .tira { display: flex; gap: 2px; margin-top: 12px; }
+  .capa { flex: 1; height: 34px; }
   .capa.a { background: var(--vivo); }
   .capa.b { background: var(--cian); }
   .capa.falta {
     border: 1px solid var(--muerto);
     background: repeating-linear-gradient(-45deg, rgba(216,65,47,0.25) 0 5px, transparent 5px 10px);
-  }
-  /* regla graduada debajo de la tira */
-  .regla {
-    display: flex; justify-content: space-between; font-size: 10px;
-    letter-spacing: 0.1em; color: var(--khaki); margin-top: 4px;
   }
   .rotulos { display: flex; gap: 2px; margin-top: 6px; font-size: 11px; letter-spacing: 0.1em; }
   .rotulo { padding: 4px 8px; border-top: 2px solid; white-space: nowrap; overflow: hidden;
@@ -117,155 +132,110 @@
   .rotulo.a { color: var(--vivo); border-color: var(--vivo); }
   .rotulo.b { color: var(--cian); border-color: var(--cian); }
   .rotulo.falta { color: var(--muerto); border-color: var(--muerto); }
+  .regla { display: flex; justify-content: space-between; font-size: 10px;
+           letter-spacing: 0.12em; color: var(--khaki); margin-top: 5px; }
+  .pie-fig { font-size: 11px; color: var(--khaki); letter-spacing: 0.06em; margin: 0 0 30px; }
 
-  /* ---- secciones numeradas ---- */
-  section { padding: 44px 0; border-top: 1px solid var(--linea); }
+  /* ---- secciones ---- */
+  section { padding: 52px 0; border-top: 1px solid var(--linea); }
   h2 {
-    font-size: 12px; text-transform: uppercase; letter-spacing: 0.22em;
-    color: var(--hueso); font-weight: 700; margin: 0 0 22px;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.24em;
+    color: var(--hueso); font-weight: 700; margin: 0 0 24px;
     display: flex; align-items: center; gap: 14px;
   }
   h2 .num { color: var(--vivo); }
-  h2::after { content: ''; flex: 1; height: 1px; background: var(--linea); }
+  h2::after { content: ''; flex: 1; height: 1px;
+              background: repeating-linear-gradient(90deg, var(--linea) 0 6px, transparent 6px 10px); }
   h3 { font-size: 14px; margin: 0 0 6px; color: var(--hueso); font-weight: 700;
        letter-spacing: 0.1em; text-transform: uppercase; }
   p { margin: 0 0 14px; }
-  .grande { font-size: 18px; line-height: 1.6; color: var(--hueso); max-width: 700px; }
+  .grande { font-size: 19px; line-height: 1.6; color: var(--hueso); max-width: 720px; }
 
   pre {
-    background: var(--caja); border: 1px solid var(--linea);
-    border-left: 2px solid var(--vivo);
-    padding: 14px 16px; overflow-x: auto; font-size: 13px; color: var(--hueso);
-    margin: 0 0 12px;
+    background: var(--caja); border: 1px solid var(--linea); border-left: 2px solid var(--vivo);
+    padding: 14px 16px; overflow-x: auto; font-size: 13px; color: var(--hueso); margin: 0 0 12px;
   }
   pre .com { color: var(--khaki); }
   code { color: var(--vivo); }
   p code, li code { font-size: 13px; }
 
   .grilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
-  .tarjeta { border: 1px solid var(--linea); background: var(--caja); padding: 18px 20px; }
+  .tarjeta { border: 1px solid var(--linea); background: var(--caja); padding: 20px; }
   .tarjeta p { color: var(--khaki); font-size: 14px; margin: 0; }
-  .tarjeta .que {
-    color: var(--vivo); font-size: 10px; text-transform: uppercase;
-    letter-spacing: 0.2em; margin-bottom: 9px;
-  }
+  .tarjeta .que { color: var(--vivo); font-size: 10px; text-transform: uppercase;
+                  letter-spacing: 0.22em; margin-bottom: 10px; }
 
   ul { padding-left: 20px; margin: 0; }
   li { margin-bottom: 9px; color: var(--khaki); }
   li b { color: var(--hueso); font-weight: 400; }
 
-  /* ---- panel de advertencia ---- */
   .aviso { display: flex; border: 1px solid var(--muerto); background: rgba(216,65,47,0.04); }
   .aviso .franja {
     width: 16px; flex: none;
     background: repeating-linear-gradient(-45deg, var(--muerto) 0 8px, transparent 8px 16px);
-    opacity: 0.7;
+    opacity: 0.65;
   }
-  .aviso .cuerpo { padding: 20px 24px; }
-  .aviso .titulo {
-    color: var(--muerto); font-size: 11px; letter-spacing: 0.2em;
-    text-transform: uppercase; font-weight: 700; margin-bottom: 14px;
-  }
+  .aviso .cuerpo { padding: 22px 26px; }
+  .aviso .titulo { color: var(--muerto); font-size: 11px; letter-spacing: 0.2em;
+                   text-transform: uppercase; font-weight: 700; margin-bottom: 14px; }
 
-  footer {
-    padding: 34px 0 60px; border-top: 1px solid var(--linea);
-    color: var(--khaki); font-size: 12px; letter-spacing: 0.1em;
-  }
+  footer { padding: 40px 0; color: var(--khaki); font-size: 12px; letter-spacing: 0.08em; }
   footer a { color: var(--khaki); }
   footer a:hover { color: var(--vivo); }
-  .fin { text-align: center; color: var(--linea); letter-spacing: 0.3em;
-         font-size: 11px; margin-bottom: 22px; text-transform: uppercase; }
+  .fin { text-align: center; color: var(--linea); letter-spacing: 0.34em;
+         font-size: 10px; margin-bottom: 24px; text-transform: uppercase; }
 
   @media (max-width: 700px) {
-    .logo { font-size: 40px; }
-    .lema { font-size: 12px; }
-    .banda { font-size: 16px; }
-    .rotulos, .sello { display: none; }
-    .marco { padding: 22px 18px; }
+    .rotulos { display: none; }
+    .cruz { display: none; }
+    header { padding: 48px 0 40px; }
+    .banda { font-size: 15px; }
   }
 </style>
 </head>
 <body>
 
-<div class="cintillo">
-  <div class="wrap">
-    <span>Shard</span><span class="sep">//</span>
-    <span>Field manual</span><span class="sep">//</span>
-    <span>Distributed inference</span>
-    <span class="der">No central command</span>
-  </div>
-</div>
+<div class="clasif">// Unclassified // Open source // No central command //</div>
 
 <div class="wrap">
+  <div class="hoja">
+    <span>Doc <b>SHARD-01</b></span>
+    <span>Rev <b>0.8.0</b></span>
+    <span>Subject <b>Distributed inference</b></span>
+    <span class="der">Sheet <b>1 of 1</b></span>
+  </div>
 
   <header>
-    <div class="marco">
-      <div class="sello">No server<br>No coordinator</div>
-      <div class="desig">Designation 01 — Distributed model</div>
-      <div class="logo">sha<i>/</i>rd</div>
-      <div class="lema">One model. Many machines. No server.</div>
-      <p class="bajada">
-        An LLM whose layers do not live on any single machine. They are split across devices
-        that find each other on their own. <b>If one leaves, the model cannot think</b> —
-        and the screen says so, in red, before you ask.
-      </p>
+    <span class="cruz ai">+</span><span class="cruz ad">+</span>
+    <span class="cruz bi">+</span><span class="cruz bd">+</span>
 
-      <div class="botones">
-        <a class="boton lleno" href="#install">Install it</a>
-        <a class="boton vacio" href="https://github.com/tomazzi14/shard-free">Source on GitHub</a>
-      </div>
-    </div>
+    <div class="kicker">Field unit <span>//</span> Llama 3.2 3B <span>//</span> 28 layers</div>
 
-    <div class="demo">
-      <div class="rotulo-demo">Status reading — one machine present</div>
-      <div class="banda muerta">
-        MODEL INCOMPLETE — LAYERS 15-27 MISSING
-        <small>15 of 28 layers. The model cannot think until another machine joins.</small>
-      </div>
-      <div class="tira">
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
-        <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
-        <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
-        <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
-        <div class="capa falta"></div>
-      </div>
-      <div class="rotulos">
-        <div class="rotulo a" style="flex-grow:15">laptop1 · 0-14</div>
-        <div class="rotulo falta" style="flex-grow:13">missing · 15-27</div>
-      </div>
-      <div class="regla"><span>Layer 00</span><span>Layer 27</span></div>
-    </div>
+    <h1>
+      One model.<br>
+      Many machines.<br>
+      <span class="op">No server.</span>
+    </h1>
 
-    <div class="demo">
-      <div class="rotulo-demo">Status reading — second machine joined</div>
-      <div class="banda viva">
-        MODEL COMPLETE
-        <small>28 of 28 layers served by 2 machine(s)</small>
-      </div>
-      <div class="tira">
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
-        <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
-        <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
-        <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
-        <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
-        <div class="capa b"></div>
-      </div>
-      <div class="rotulos">
-        <div class="rotulo a" style="flex-grow:15">laptop1 · 0-14</div>
-        <div class="rotulo b" style="flex-grow:13">laptop2 · 15-27</div>
-      </div>
-      <div class="regla"><span>Layer 00</span><span>Layer 27</span></div>
+    <p class="sub">
+      An LLM whose layers do not live on any single machine. They are split across devices
+      that find each other on their own — nothing coordinates them.
+      <b>If one leaves, the model cannot think</b>, and the screen says so before you ask.
+    </p>
+
+    <div class="botones">
+      <a class="boton lleno" href="#install">Install it</a>
+      <a class="boton vacio" href="https://github.com/tomazzi14/shard-free">Source on GitHub</a>
     </div>
   </header>
+
+  <dl class="datos">
+    <div><dt>Model</dt><dd>Llama 3.2 3B</dd></div>
+    <div><dt>Layers</dt><dd>28 · split by range</dd></div>
+    <div><dt>Discovery</dt><dd>UDP · LAN sweep</dd></div>
+    <div><dt>Compute</dt><dd>llama.cpp RPC</dd></div>
+    <div><dt>Delivery</dt><dd>Pear · peer-to-peer</dd></div>
+  </dl>
 
   <section>
     <h2><span class="num">§ 01</span> What it is</h2>
@@ -274,39 +244,77 @@
       the whole model, and no server decides who holds what — every node runs the same
       arithmetic over the same peer list and reaches the same answer on its own.
     </p>
-    <p style="color:var(--khaki);max-width:700px">
+    <p style="color:var(--khaki);max-width:720px">
       Close one laptop and the strip breaks. That is not an error state we built for the
       demo; it is what the system honestly is.
     </p>
-  </section>
 
-  <section id="install">
-    <h2><span class="num">§ 02</span> Install</h2>
-    <p>Shard is a Pear application. It is not on npm and there is no download page — it is
-      distributed peer-to-peer, by key:</p>
-<pre><span class="com"># the target directory has to exist first</span>
-mkdir -p ~/shard
-pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo</pre>
+    <div class="figura" style="margin-top:30px">
+      <div class="cabecera">
+        <b>Fig. 01</b><span>Status panel — one machine present</span>
+        <span class="der">Refused</span>
+      </div>
+      <div class="interior">
+        <div class="banda muerta">
+          MODEL INCOMPLETE — LAYERS 15-27 MISSING
+          <small>15 of 28 layers. The model cannot think until another machine joins.</small>
+        </div>
+        <div class="tira">
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
+          <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
+          <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
+          <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
+          <div class="capa falta"></div>
+        </div>
+        <div class="rotulos">
+          <div class="rotulo a" style="flex-grow:15">laptop1 · 0-14</div>
+          <div class="rotulo falta" style="flex-grow:13">missing · 15-27</div>
+        </div>
+        <div class="regla"><span>Layer 00</span><span>Layer 27</span></div>
+      </div>
+    </div>
 
-    <p style="margin-top:22px">It needs llama.cpp built with RPC support, and the model, on
-      every machine that serves layers:</p>
-<pre>git clone https://github.com/ggml-org/llama.cpp
-cd llama.cpp &amp;&amp; cmake -B build -DGGML_RPC=ON -DGGML_METAL=ON &amp;&amp; cmake --build build -j8
-
-curl -L -o ~/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
-  https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf</pre>
-
-    <p style="margin-top:22px">Then one command per machine:</p>
-<pre>~/shard/hello-pear-bare --label laptop1 --port 50053 --offer 1</pre>
-    <p style="color:var(--khaki)">
-      <code>--offer 1</code> is how many GB of layers this machine lends. Open
-      <code>localhost:7777</code> and the panel shows the split live. Updates arrive over the
-      air, peer-to-peer: no reinstall, no server.
+    <div class="figura">
+      <div class="cabecera">
+        <b>Fig. 02</b><span>Status panel — second machine joined</span>
+        <span class="der">Operational</span>
+      </div>
+      <div class="interior">
+        <div class="banda viva">
+          MODEL COMPLETE
+          <small>28 of 28 layers served by 2 machine(s)</small>
+        </div>
+        <div class="tira">
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+          <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
+          <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
+          <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
+          <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
+          <div class="capa b"></div>
+        </div>
+        <div class="rotulos">
+          <div class="rotulo a" style="flex-grow:15">laptop1 · 0-14</div>
+          <div class="rotulo b" style="flex-grow:13">laptop2 · 15-27</div>
+        </div>
+        <div class="regla"><span>Layer 00</span><span>Layer 27</span></div>
+      </div>
+    </div>
+    <p class="pie-fig">
+      No operator assigned those ranges. Both machines computed the same split independently.
     </p>
   </section>
 
   <section>
-    <h2><span class="num">§ 03</span> How it works</h2>
+    <h2><span class="num">§ 02</span> How it works</h2>
     <div class="grilla">
       <div class="tarjeta">
         <div class="que">01 · Distribution</div>
@@ -333,6 +341,31 @@ curl -L -o ~/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
           The asking node drives them all through one <code>--rpc</code> list.</p>
       </div>
     </div>
+  </section>
+
+  <section id="install">
+    <h2><span class="num">§ 03</span> Install</h2>
+    <p>Shard is a Pear application. It is not on npm and there is no download page — it is
+      distributed peer-to-peer, by key:</p>
+<pre><span class="com"># the target directory has to exist first</span>
+mkdir -p ~/shard
+pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo</pre>
+
+    <p style="margin-top:22px">It needs llama.cpp built with RPC support, and the model, on
+      every machine that serves layers:</p>
+<pre>git clone https://github.com/ggml-org/llama.cpp
+cd llama.cpp &amp;&amp; cmake -B build -DGGML_RPC=ON -DGGML_METAL=ON &amp;&amp; cmake --build build -j8
+
+curl -L -o ~/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
+  https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf</pre>
+
+    <p style="margin-top:22px">Then one command per machine:</p>
+<pre>~/shard/hello-pear-bare --label laptop1 --port 50053 --offer 1</pre>
+    <p style="color:var(--khaki)">
+      <code>--offer 1</code> is how many GB of layers this machine lends. Open
+      <code>localhost:7777</code> and the panel shows the split live. Updates arrive over the
+      air, peer-to-peer: no reinstall, no server.
+    </p>
   </section>
 
   <section>
@@ -365,7 +398,9 @@ curl -L -o ~/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
     <a href="https://github.com/tomazzi14/shard-free">github.com/tomazzi14/shard-free</a>
     · Apache-2.0
   </footer>
-
 </div>
+
+<div class="clasif pie">// Unclassified // Open source // No central command //</div>
+
 </body>
 </html>
