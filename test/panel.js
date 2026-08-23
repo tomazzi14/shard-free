@@ -16,6 +16,10 @@ class NodoFalso extends EventEmitter {
     this.peers = peers
     this.preguntas = []
     this.ultima = null
+    // El Nodo real siempre tiene identidad y ficha; el doble tambien, si no el panel
+    // se cae contra un doble mas pobre que la cosa que imita.
+    this.id = 'esta-50053'
+    this.ficha = { etiqueta: 'esta', rpcPort: 50053, ofreceGB: 0 }
   }
   plan() {
     return planificar({ peers: this.peers })
@@ -71,7 +75,7 @@ function escuchar(puerto, alRecibir) {
 }
 
 test('el que se conecta recibe una foto del estado actual', (t) => {
-  t.plan(4)
+  t.plan(6)
   const { panel, puerto } = levantar()
 
   panel.servidor.on('listening', () => {
@@ -81,6 +85,8 @@ test('el que se conecta recibe una foto del estado actual', (t) => {
       t.is(foto.version, '9.9.9', 'trae la version, que es lo que cambia con el OTA')
       t.absent(foto.plan.completo, 'y el estado del modelo, sin esperar al proximo cambio')
       t.alike(foto.plan.faltan, { desde: 15, hasta: 27 })
+      t.is(foto.yo, 'esta-50053', 'el panel puede marcar cual de las filas es esta maquina')
+      t.is(foto.etiqueta, 'esta', 'y nombrarla aunque no este sirviendo ninguna capa')
       req.destroy()
       panel.stop()
     })
