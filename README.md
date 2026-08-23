@@ -214,6 +214,10 @@ land — including llama.cpp's own complaints, which is how most of the bugs bel
   itself: anyone on the network can send it work, and the traffic is in the clear.
 - **Nothing verifies that a peer computed what it claimed.** There is no proof of execution,
   no redundancy to cross-check against, and no reputation.
+- **macOS on Apple Silicon only.** That is the only target we built and staged. The
+  code has no platform-specific parts and `package.json` has make scripts for linux and
+  win32, but nothing else has been compiled or tested, so today `pear install` only gets
+  you a runnable app on an M-series Mac.
 - **No redundancy.** Each layer is served by exactly one machine. Lose it and the model is
   incomplete until it returns.
 - **A peer dying mid-inference kills that answer.** The model state is evaluated before
