@@ -478,6 +478,71 @@
         color: var(--vivo);
       }
 
+      .notas {
+        display: grid;
+        gap: 12px;
+        margin-top: 20px;
+      }
+      .nota {
+        border: 1px solid var(--linea);
+        border-left: 2px solid var(--khaki);
+        background: var(--caja);
+        padding: 15px 18px;
+      }
+      .nota b {
+        color: var(--hueso);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+      }
+      .nota p {
+        color: var(--khaki);
+        font-size: 14px;
+        margin: 6px 0 0;
+      }
+      .proximo {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 14px;
+        margin: 0;
+      }
+      .proximo div {
+        border: 1px solid var(--linea);
+        padding: 16px 18px;
+      }
+      .proximo dt {
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--vivo);
+        margin-bottom: 6px;
+      }
+      .proximo dd {
+        margin: 0;
+        font-size: 14px;
+        color: var(--khaki);
+      }
+      .cierre {
+        border: 1px solid var(--vivo);
+        background: rgba(255, 176, 0, 0.04);
+        padding: 40px 34px;
+        margin-top: 48px;
+        text-align: center;
+      }
+      .cierre .frase {
+        font-size: clamp(20px, 3.4vw, 34px);
+        font-weight: 700;
+        line-height: 1.25;
+        text-transform: uppercase;
+      }
+      .cierre .frase span {
+        color: var(--vivo);
+      }
+      .cierre .bloque {
+        max-width: 720px;
+        margin: 26px auto 0;
+        text-align: left;
+      }
+
       .cifras {
         display: flex;
         gap: 60px;
@@ -683,6 +748,10 @@
           An LLM whose layers do not live on any single machine. They are split across devices that
           find each other on their own — nothing coordinates them.
           <b>If one leaves, the model cannot think</b>, and the screen says so before you ask.
+        </p>
+        <p class="sub" style="margin-top: 16px; padding-top: 0; border-top: 0">
+          Not a chat client with a peer-to-peer backend. The weights themselves are what gets
+          distributed.
         </p>
 
         <div class="botones">
@@ -899,6 +968,36 @@
             </p>
           </div>
         </div>
+
+        <h3 style="margin: 38px 0 0; letter-spacing: 0.22em; font-size: 11px; color: var(--vivo)">
+          Field notes
+        </h3>
+        <div class="notas">
+          <div class="nota">
+            <b>Hyperswarm never closed the hole punch between our two laptops.</b>
+            <p>
+              Both report <code>firewalled true</code>. Same WiFi, different WiFi, phone hotspot on
+              CGNAT: network timeout every time. On the LAN we stopped asking it to, and sweep the
+              subnet over UDP instead.
+            </p>
+          </div>
+          <div class="nota">
+            <b>A layer server cannot tell you when it is ready.</b>
+            <p>
+              <code>ggml-rpc-server</code> is C, and with stdout on a pipe it block-buffers, so
+              <code>Starting RPC server</code> never arrives. Readiness is a TCP knock on the port
+              instead of a line of output.
+            </p>
+          </div>
+          <div class="nota">
+            <b>llama-cli writes its answer to the terminal, not to your pipe.</b>
+            <p>
+              Its chat interface goes straight to the controlling terminal. Our tests redirected
+              output to a file, so there was no TTY and it passed here while failing on a real
+              machine. <code>--simple-io</code> is the fix.
+            </p>
+          </div>
+        </div>
       </section>
 
       <section id="deploy">
@@ -1055,6 +1154,45 @@ pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobd
                 <b>It does not distribute the model.</b> Each machine downloads the GGUF itself.
               </li>
             </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="next">
+        <h2><span class="num">§ 06</span> What is next</h2>
+        <dl class="proximo">
+          <div>
+            <dt>Beyond the LAN</dt>
+            <dd>
+              Reach peers across networks, with a relay for the symmetric-NAT case the Pear CLI does
+              not expose today.
+            </dd>
+          </div>
+          <div>
+            <dt>Redundancy</dt>
+            <dd>
+              More than one machine per layer range, so a peer leaving degrades the model instead of
+              stopping it.
+            </dd>
+          </div>
+          <div>
+            <dt>Paying the peers</dt>
+            <dd>
+              Lending memory to a stranger should be worth something. Designed, not built:
+              micropayments in USDT via WDK.
+            </dd>
+          </div>
+        </dl>
+
+        <div class="cierre">
+          <div class="frase">
+            Your machine holds a shard.<br /><span>Together, they think.</span>
+          </div>
+          <div class="bloque">
+            <pre>
+mkdir -p ~/shard
+pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo</pre
+            >
           </div>
         </div>
       </section>
