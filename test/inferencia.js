@@ -52,6 +52,10 @@ test('los argumentos salen del plan, no escritos a mano', (t) => {
   t.is(args[args.indexOf('-m') + 1], '/m.gguf')
   t.is(args[args.indexOf('-p') + 1], 'hola')
   t.ok(args.includes('-st'), '-st: una respuesta y termina, no abre el chat interactivo')
+  t.ok(
+    args.includes('--simple-io'),
+    'sin esto llama-cli escribe a la terminal y se saltea nuestro pipe'
+  )
 })
 
 test('tensor-split no se pasa salvo que lo pidan', (t) => {
