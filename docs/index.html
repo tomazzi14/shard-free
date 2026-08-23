@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shard — One model. Many machines. No server.</title>
+<meta name="description" content="An LLM whose layers live on different machines. No server, no coordinator. If a machine leaves, the model cannot think.">
+<style>
+  :root {
+    --bg: #0A0E14;
+    --caja: #111823;
+    --linea: #1E2836;
+    --texto: #C9D4E5;
+    --tenue: #6B7C93;
+    --vivo: #FFB000;
+    --cian: #22D3EE;
+    --muerto: #EF4444;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--texto);
+    font-family: var(--mono); font-size: 15px; line-height: 1.65;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--vivo); }
+
+  /* ---- hero ---- */
+  header { padding: 72px 0 40px; }
+  .logo { font-size: 64px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; }
+  .logo i { color: var(--vivo); font-style: normal; }
+  .lema { font-size: 20px; color: var(--texto); margin-top: 14px; }
+  .bajada { font-size: 16px; color: var(--tenue); margin-top: 18px; max-width: 640px; }
+  .bajada b { color: var(--texto); font-weight: 400; }
+
+  .botones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .boton {
+    display: inline-block; text-decoration: none; padding: 11px 20px;
+    border-radius: 4px; font-weight: 700; font-size: 14px;
+  }
+  .boton.lleno { background: var(--vivo); color: #0A0E14; }
+  .boton.vacio { border: 1px solid var(--linea); color: var(--texto); }
+  .boton.vacio:hover { border-color: var(--vivo); color: var(--vivo); }
+
+  /* ---- la demo del hero: la banda que cambia de estado ---- */
+  .demo { margin: 44px 0 8px; }
+  .banda {
+    padding: 20px 24px; border: 1px solid; border-radius: 6px;
+    font-size: 22px; font-weight: 700;
+  }
+  .banda small { display: block; margin-top: 7px; font-size: 13px; font-weight: 400; opacity: 0.8; }
+  .banda.muerta { color: var(--muerto); border-color: var(--muerto); background: rgba(239,68,68,0.06); }
+  .banda.viva { color: var(--vivo); border-color: var(--vivo); background: rgba(255,176,0,0.06); }
+
+  .tira { display: flex; gap: 2px; margin-top: 12px; }
+  .capa { flex: 1; height: 40px; border-radius: 2px; }
+  .capa.a { background: var(--vivo); }
+  .capa.b { background: var(--cian); }
+  .capa.falta {
+    border: 1px solid var(--muerto);
+    background: repeating-linear-gradient(-45deg, rgba(239,68,68,0.22) 0 6px, transparent 6px 12px);
+  }
+  .rotulos { display: flex; gap: 2px; margin-top: 6px; font-size: 12px; }
+  .rotulo { padding: 4px 8px; border-top: 2px solid; white-space: nowrap; overflow: hidden; }
+  .rotulo.a { color: var(--vivo); border-color: var(--vivo); }
+  .rotulo.b { color: var(--cian); border-color: var(--cian); }
+  .rotulo.falta { color: var(--muerto); border-color: var(--muerto); }
+
+  /* ---- secciones ---- */
+  section { padding: 46px 0; border-top: 1px solid var(--linea); }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.16em;
+       color: var(--tenue); font-weight: 400; margin: 0 0 20px; }
+  h3 { font-size: 17px; margin: 0 0 6px; color: var(--texto); font-weight: 700; }
+  p { margin: 0 0 14px; }
+  .grande { font-size: 19px; line-height: 1.55; color: var(--texto); max-width: 700px; }
+
+  pre {
+    background: var(--caja); border: 1px solid var(--linea); border-radius: 4px;
+    padding: 14px 16px; overflow-x: auto; font-size: 13px; color: var(--texto);
+    margin: 0 0 12px;
+  }
+  pre .com { color: var(--tenue); }
+  code { color: var(--vivo); }
+  p code, li code { font-size: 13px; }
+
+  .grilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
+  .tarjeta {
+    border: 1px solid var(--linea); border-radius: 5px; background: var(--caja);
+    padding: 18px 20px;
+  }
+  .tarjeta p { color: var(--tenue); font-size: 14px; margin: 0; }
+  .tarjeta .que { color: var(--vivo); font-size: 11px; text-transform: uppercase;
+                  letter-spacing: 0.12em; margin-bottom: 8px; }
+
+  ul { padding-left: 20px; margin: 0; }
+  li { margin-bottom: 9px; color: var(--tenue); }
+  li b { color: var(--texto); font-weight: 400; }
+
+  .honesto li::marker { color: var(--muerto); }
+
+  footer { padding: 40px 0 64px; border-top: 1px solid var(--linea); color: var(--tenue); font-size: 13px; }
+  footer a { color: var(--tenue); }
+  footer a:hover { color: var(--vivo); }
+
+  @media (max-width: 640px) {
+    .logo { font-size: 44px; }
+    .lema { font-size: 17px; }
+    .banda { font-size: 17px; }
+    .rotulos { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <header>
+    <div class="logo">sha<i>/</i>rd</div>
+    <div class="lema">One model. Many machines. No server.</div>
+    <p class="bajada">
+      An LLM whose layers do not live on any single machine. They are split across devices
+      that find each other on their own. <b>If one leaves, the model cannot think</b> —
+      and the screen says so, in red, before you ask.
+    </p>
+
+    <div class="botones">
+      <a class="boton lleno" href="#install">Install it</a>
+      <a class="boton vacio" href="https://github.com/tomazzi14/shard-free">Source on GitHub</a>
+    </div>
+
+    <div class="demo">
+      <div class="banda muerta">
+        MODEL INCOMPLETE — layers 15-27 missing
+        <small>15 of 28 layers. The model cannot think until another machine joins.</small>
+      </div>
+      <div class="tira">
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
+        <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
+        <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
+        <div class="capa falta"></div><div class="capa falta"></div><div class="capa falta"></div>
+        <div class="capa falta"></div>
+      </div>
+      <div class="rotulos">
+        <div class="rotulo a" style="flex-grow:15">laptop1 · 0-14</div>
+        <div class="rotulo falta" style="flex-grow:13">missing · 15-27</div>
+      </div>
+    </div>
+
+    <div class="demo">
+      <div class="banda viva">
+        MODEL COMPLETE
+        <small>28 of 28 layers served by 2 machine(s)</small>
+      </div>
+      <div class="tira">
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa a"></div><div class="capa a"></div><div class="capa a"></div>
+        <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
+        <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
+        <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
+        <div class="capa b"></div><div class="capa b"></div><div class="capa b"></div>
+        <div class="capa b"></div>
+      </div>
+      <div class="rotulos">
+        <div class="rotulo a" style="flex-grow:15">laptop1 · 0-14</div>
+        <div class="rotulo b" style="flex-grow:13">laptop2 · 15-27</div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <h2>What it is</h2>
+    <p class="grande">
+      Llama 3.2 3B has 28 layers. Shard hands each machine a range of them. No machine holds
+      the whole model, and no server decides who holds what — every node runs the same
+      arithmetic over the same peer list and reaches the same answer on its own.
+    </p>
+    <p style="color:var(--tenue);max-width:700px">
+      Close one laptop and the strip breaks. That is not an error state we built for the
+      demo; it is what the system honestly is.
+    </p>
+  </section>
+
+  <section id="install">
+    <h2>Install</h2>
+    <p>Shard is a Pear application. It is not on npm and there is no download page — it is
+      distributed peer-to-peer, by key:</p>
+<pre><span class="com"># the target directory has to exist first</span>
+mkdir -p ~/shard
+pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo</pre>
+
+    <p style="margin-top:22px">It needs llama.cpp built with RPC support, and the model, on
+      every machine that serves layers:</p>
+<pre>git clone https://github.com/ggml-org/llama.cpp
+cd llama.cpp &amp;&amp; cmake -B build -DGGML_RPC=ON -DGGML_METAL=ON &amp;&amp; cmake --build build -j8
+
+curl -L -o ~/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
+  https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf</pre>
+
+    <p style="margin-top:22px">Then one command per machine:</p>
+<pre>~/shard/hello-pear-bare --label laptop1 --port 50053 --offer 1</pre>
+    <p style="color:var(--tenue)">
+      <code>--offer 1</code> is how many GB of layers this machine lends. Open
+      <code>localhost:7777</code> and the panel shows the split live. Updates arrive over the
+      air, peer-to-peer: no reinstall, no server.
+    </p>
+  </section>
+
+  <section>
+    <h2>How it works</h2>
+    <div class="grilla">
+      <div class="tarjeta">
+        <div class="que">Distribution</div>
+        <h3>Pear + Bare</h3>
+        <p>The app ships as a standalone binary over Hyperdrive. Updates travel as deltas to
+          running instances — an 80MB binary costs about 6MB on the wire.</p>
+      </div>
+      <div class="tarjeta">
+        <div class="que">Discovery</div>
+        <h3>UDP on the LAN</h3>
+        <p>Nodes announce themselves by sweeping the local subnet. Hyperswarm could not hole
+          punch between two firewalled laptops, so on the LAN we do not ask it to.</p>
+      </div>
+      <div class="tarjeta">
+        <div class="que">Planning</div>
+        <h3>No coordinator</h3>
+        <p>Peers are sorted by a stable id and layers are handed out in order. Every node
+          computes the same plan independently. Nothing votes, nothing is elected.</p>
+      </div>
+      <div class="tarjeta">
+        <div class="que">Inference</div>
+        <h3>llama.cpp RPC</h3>
+        <p>Each machine runs a <code>ggml-rpc-server</code> holding its layers in GPU memory.
+          The asking node drives them all through one <code>--rpc</code> list.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What it does not do</h2>
+    <ul class="honesto">
+      <li><b>It does not cross subnets.</b> Discovery is LAN-only. Two machines on different
+        networks will not find each other.</li>
+      <li><b>It does not punch through symmetric NAT.</b> Two peers both behind it need a
+        relay, which the Pear CLI does not expose.</li>
+      <li><b>The RPC link is neither encrypted nor authenticated.</b> Anything on your LAN
+        that reaches the port can use your GPU.</li>
+      <li><b>It cannot prove a peer really ran your layers.</b> No attestation, no
+        verification. You are trusting the machines you invited.</li>
+      <li><b>There is no redundancy.</b> Every layer has exactly one owner. One machine
+        leaving breaks the model until it returns.</li>
+      <li><b>It does not distribute the model.</b> Each machine downloads the GGUF itself.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <div class="wrap" style="padding:0">
+      Built at Aleph Hackathon, Buenos Aires — August 2026.<br>
+      <a href="https://github.com/tomazzi14/shard-free">github.com/tomazzi14/shard-free</a>
+      · Apache-2.0
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>
