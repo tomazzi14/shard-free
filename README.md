@@ -234,10 +234,6 @@ pear stage pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo ./out/bui
 pear seed pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo
 ```
 
-More detail in [SHARDING.md](SHARDING.md) (layer splitting), [DISCOVERY.md](DISCOVERY.md)
-(why UDP sweeping), [INFRA.md](INFRA.md) (seeding and OTA) and [ESTADO.md](ESTADO.md)
-(day-by-day log).
-
 ## License
 
 Apache-2.0, inherited from the `hello-pear-bare` template.

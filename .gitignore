@@ -9,3 +9,10 @@ models/
 
 # worktrees y estado local del agente
 .claude/
+
+# notas internas de trabajo (en español, no van al repo publico)
+ESTADO.md
+DISCOVERY.md
+INFRA.md
+SHARDING.md
+shard-roadmap-operativo.pdf
