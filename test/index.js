@@ -231,3 +231,33 @@ test('un puerto ocupado se explica, no tumba la app', (t) => {
   t.ok(/puerto 41234 ya esta ocupado/.test(vistos[0]), 'dice cual es el puerto y por que')
   t.absent(disco.activo, 'y no se queda creyendo que esta escuchando')
 })
+
+test('si un peer cambia lo que ofrece, se avisa', (t) => {
+  const { disco, socket } = nodo()
+  disco.start()
+
+  const cambios = []
+  disco.on('peer-cambio', (p) => cambios.push(p))
+
+  // Un peer se anuncia sin poder servir todavia, y despues levanta su servidor de capas.
+  socket.recibir({ t: 'here', id: 'otro', ficha: { ofreceGB: 0 } }, '192.168.1.9')
+  socket.recibir({ t: 'here', id: 'otro', ficha: { ofreceGB: 1 } }, '192.168.1.9')
+
+  t.is(cambios.length, 1, 'sin esto, el que lo vio primero lo deja afuera del reparto')
+  t.is(cambios[0].ficha.ofreceGB, 1)
+  disco.stop()
+})
+
+test('un peer que repite la misma ficha no genera ruido', (t) => {
+  const { disco, socket } = nodo()
+  disco.start()
+
+  const cambios = []
+  disco.on('peer-cambio', (p) => cambios.push(p))
+
+  socket.recibir({ t: 'here', id: 'otro', ficha: { ofreceGB: 1 } }, '192.168.1.9')
+  socket.recibir({ t: 'here', id: 'otro', ficha: { ofreceGB: 1 } }, '192.168.1.9')
+
+  t.is(cambios.length, 0, 'se anuncia cada 5s: avisar siempre repintaria el panel sin parar')
+  disco.stop()
+})
