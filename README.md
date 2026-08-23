@@ -102,6 +102,38 @@ each other, and the errors are misleading — see _Things that bit us_ below.
 
 ---
 
+## How it fits together
+
+```mermaid
+flowchart LR
+  subgraph uno["laptop1 — asks and serves"]
+    panel["panel :7777<br/>HTTP + SSE"]
+    nodo1["shard node<br/>UDP :41234"]
+    cli["llama-cli<br/>--rpc 50053,50052"]
+    rpc1["ggml-rpc-server :50053<br/>layers 0-14"]
+  end
+
+  subgraph dos["laptop2 — serves"]
+    nodo2["shard node<br/>UDP :41234"]
+    rpc2["ggml-rpc-server :50052<br/>layers 15-27"]
+  end
+
+  semilla["a peer with a public IP<br/>reseeds the app bundle"]
+
+  nodo1 <-->|"UDP sweep: label, RAM, GB offered, rpc port"| nodo2
+  nodo1 -->|spawns| rpc1
+  nodo2 -->|spawns| rpc2
+  panel --> cli
+  cli --> rpc1
+  cli -->|"RPC over TCP, across the LAN"| rpc2
+  semilla -.->|"pear install · OTA deltas"| nodo1
+  semilla -.-> nodo2
+```
+
+Both machines run the same binary. The only difference between them is that one of them is
+the one you asked from: it starts `llama-cli` and points it at every layer server it knows,
+its own included. Any node can be that one.
+
 ## What each piece does
 
 **Pear / Bare** distributes the app itself. Shard is a standalone CLI built from the
@@ -113,6 +145,14 @@ staged for the video.
 
 **Hyperswarm / Hyperdrive** carry that distribution. Only changed blocks travel: replacing
 the whole 80MB binary moved about 6MB over the wire.
+
+**A peer with a public IP** keeps the app reachable. Both of our laptops report
+`firewalled true`, and the hole punch between them never closed on any network we tried, so
+`pear install` between them failed. A small cloud machine seeds the bundle around the clock
+and everyone connects to it directly. It is worth being precise about what it is and is not:
+it holds a copy of the app and reseeds it. It does not coordinate anyone, holds no state,
+and takes no part in inference. If it disappears, any other machine already seeding keeps
+the link alive — that is what seeding means here.
 
 **UDP on the local network** finds peers. Each node listens on 41234 and sweeps its subnet
 with a HELLO; whoever receives it replies with its card — label, RPC port, RAM, cores, and
