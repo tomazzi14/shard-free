@@ -36,6 +36,31 @@ test('dos peers chicos se reparten las capas sin huecos ni solapes', (t) => {
   t.is(plan.tensorSplit, '15,13')
 })
 
+test('tres peers desparejos se reparten sin huecos, y el ultimo cierra el modelo', (t) => {
+  // 0.5GB son 7 capas, 1GB son 15. El tercero solo tiene que poner las 6 que faltan,
+  // aunque le entren 15: nadie toma mas capas de las que quedan.
+  const plan = planificar({
+    peers: [
+      peer('a', 0.5, '192.168.1.10'),
+      peer('b', 1, '192.168.1.11'),
+      peer('c', 1, '192.168.1.12')
+    ]
+  })
+
+  t.ok(plan.completo)
+  t.alike(
+    plan.asignaciones.map((a) => [a.desde, a.hasta]),
+    [
+      [0, 6],
+      [7, 21],
+      [22, 27]
+    ],
+    'cada uno arranca donde termino el anterior'
+  )
+  t.is(plan.asignaciones[2].capas, 6, 'el ultimo toma solo lo que falta, no lo que le entra')
+  t.is(plan.rpc, '192.168.1.10:50052,192.168.1.11:50052,192.168.1.12:50052')
+})
+
 test('si la memoria no alcanza, dice exactamente que capas faltan', (t) => {
   const plan = planificar({ peers: [peer('a', 1)] })
 

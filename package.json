@@ -1,6 +1,6 @@
 {
   "name": "hello-pear-bare",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "Pear Runtime CLI boilerplate using Bare with OTA updater support.",
   "private": true,
   "bin": "bin.mjs",
