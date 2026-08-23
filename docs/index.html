@@ -478,6 +478,34 @@
         color: var(--vivo);
       }
 
+      .cifras {
+        display: flex;
+        gap: 60px;
+        flex-wrap: wrap;
+        margin: 26px 0 30px;
+      }
+      .cifra .n {
+        font-size: clamp(46px, 7vw, 84px);
+        font-weight: 700;
+        color: var(--vivo);
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .cifra .q {
+        font-size: 15px;
+        color: var(--hueso);
+        margin-top: 12px;
+        max-width: 17ch;
+        line-height: 1.4;
+      }
+      .cifra .f {
+        font-size: 11px;
+        color: var(--khaki);
+        margin-top: 12px;
+        padding-top: 9px;
+        border-top: 1px solid var(--linea);
+        max-width: 24ch;
+      }
       .grilla {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -689,11 +717,23 @@
 
       <section id="problem">
         <h2><span class="num">§ 01</span> The problem</h2>
+        <div class="cifras">
+          <div class="cifra">
+            <div class="n">25</div>
+            <div class="q">countries where ChatGPT is not available</div>
+            <div class="f">World Population Review, August 2026</div>
+          </div>
+          <div class="cifra">
+            <div class="n">313</div>
+            <div class="q">internet shutdowns across 52 countries in 2025 — a record</div>
+            <div class="f">Access Now, #KeepItOn</div>
+          </div>
+        </div>
         <p class="grande">
-          Running a model means owning one machine big enough to hold all of it. Models grow faster
-          than the machines do, so the accepted answer is to rent someone else's server: your
-          prompts leave your network, and the day that server is down — or decides you are not
-          welcome — you have nothing.
+          A model that lives on a server inherits that server's switch. Whoever owns the machine
+          decides whether you get to think with it today — and running one yourself means owning
+          hardware big enough to hold the whole model, which is exactly what most people do not
+          have.
         </p>
         <p class="tenue">
           Meanwhile the room is full of idle GPUs. Every laptop at the table could hold a piece of

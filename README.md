@@ -24,6 +24,19 @@ pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo
 
 ---
 
+## Why
+
+ChatGPT is unavailable in 25 countries. In 2025 there were 313 internet shutdowns across
+52 countries, the highest number on record.
+
+<sub>Sources: World Population Review (August 2026); Access Now, #KeepItOn.</sub>
+
+A model that lives on a server inherits that server's switch — whoever owns it decides
+whether you get to think with it today. Shard has no server to switch off. The model lives
+in the machines of the people using it, and it only works when enough of them show up.
+
+---
+
 ## What you need first
 
 Shard ships the network, not the engine. `llama.cpp` and the model weigh about 2.9GB

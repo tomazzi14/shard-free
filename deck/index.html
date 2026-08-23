@@ -1,0 +1,590 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SHARD — deck</title>
+    <style>
+      :root {
+        --bg: #0b0b0a;
+        --caja: #131311;
+        --linea: #2a2823;
+        --hueso: #e8e4d9;
+        --khaki: #8a8778;
+        --vivo: #ffb000;
+        --cian: #6fd3c7;
+        --muerto: #d8412f;
+        --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+      body {
+        background: var(--bg);
+        color: var(--hueso);
+        font-family: var(--mono);
+        font-size: 18px;
+        line-height: 1.5;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.014) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        padding: 6vh 8vw;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .slide.viva {
+        display: flex;
+      }
+
+      .clasif {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 11px;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: var(--khaki);
+        padding: 10px 0;
+        border-bottom: 1px solid var(--linea);
+        background: rgba(0, 0, 0, 0.45);
+      }
+      .num {
+        position: absolute;
+        bottom: 22px;
+        right: 30px;
+        font-size: 12px;
+        letter-spacing: 0.24em;
+        color: var(--linea);
+      }
+      .rot {
+        font-size: 12px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: var(--vivo);
+        margin-bottom: 30px;
+      }
+
+      /* ---- 1. tesis ---- */
+      .wordmark {
+        font-size: clamp(56px, 11vw, 140px);
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        line-height: 1;
+      }
+      .wordmark i {
+        color: var(--vivo);
+        font-style: normal;
+      }
+      .tesis {
+        font-size: clamp(20px, 2.6vw, 34px);
+        color: var(--hueso);
+        margin-top: 34px;
+        padding-top: 26px;
+        border-top: 1px solid var(--linea);
+        max-width: 22ch;
+        line-height: 1.35;
+      }
+      .cursor {
+        display: inline-block;
+        width: 0.55em;
+        height: 1em;
+        background: var(--vivo);
+        vertical-align: -0.12em;
+        animation: latir 1.05s steps(1) infinite;
+      }
+      @keyframes latir {
+        0%,
+        50% {
+          opacity: 1;
+        }
+        50.01%,
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* ---- 2. problema ---- */
+      .cifras {
+        display: flex;
+        gap: 8vw;
+        flex-wrap: wrap;
+      }
+      .cifra .n {
+        font-size: clamp(56px, 9vw, 116px);
+        font-weight: 700;
+        color: var(--vivo);
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .cifra .q {
+        font-size: clamp(16px, 1.7vw, 21px);
+        color: var(--hueso);
+        margin-top: 14px;
+        max-width: 16ch;
+        line-height: 1.35;
+      }
+      .cifra .f {
+        font-size: 12px;
+        color: var(--khaki);
+        margin-top: 14px;
+        padding-top: 10px;
+        border-top: 1px solid var(--linea);
+        max-width: 22ch;
+      }
+      .remate {
+        margin-top: 6vh;
+        font-size: clamp(17px, 2vw, 25px);
+        color: var(--hueso);
+        max-width: 46ch;
+        line-height: 1.4;
+      }
+
+      /* ---- 3. como funciona ---- */
+      .diagrama {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .fila {
+        display: flex;
+        gap: 12px;
+        align-items: stretch;
+      }
+      .peer {
+        flex: 1;
+        border: 1px solid var(--linea);
+        background: var(--caja);
+        border-left: 3px solid var(--shard);
+        padding: 14px 16px;
+      }
+      .peer.p0 {
+        --shard: var(--vivo);
+      }
+      .peer.p1 {
+        --shard: var(--cian);
+      }
+      .peer .id {
+        color: var(--shard);
+        font-weight: 700;
+        font-size: 15px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .peer .det {
+        color: var(--khaki);
+        font-size: 13px;
+        margin-top: 4px;
+      }
+      .peer .cap {
+        color: var(--shard);
+        font-size: 13px;
+        margin-top: 8px;
+        letter-spacing: 0.08em;
+      }
+
+      .tira {
+        display: flex;
+        gap: 2px;
+      }
+      .capa {
+        flex: 1;
+        height: 26px;
+      }
+      .capa.a {
+        background: var(--vivo);
+      }
+      .capa.b {
+        background: var(--cian);
+      }
+      .escala {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--khaki);
+        letter-spacing: 0.14em;
+      }
+
+      .cables {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 12px;
+      }
+      .cable {
+        border: 1px solid var(--linea);
+        background: var(--caja);
+        padding: 12px 14px;
+      }
+      .cable dt {
+        font-size: 10px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--vivo);
+        margin-bottom: 5px;
+      }
+      .cable dd {
+        font-size: 13px;
+        color: var(--hueso);
+      }
+      .cable dd em {
+        color: var(--khaki);
+        font-style: normal;
+      }
+      .pulso {
+        animation: pulsar 2.6s ease-in-out infinite;
+      }
+      @keyframes pulsar {
+        0%,
+        100% {
+          border-color: var(--linea);
+        }
+        50% {
+          border-color: var(--vivo);
+        }
+      }
+
+      .hoy {
+        display: flex;
+        gap: 30px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+        font-size: 14px;
+        border-top: 1px solid var(--linea);
+        padding-top: 16px;
+      }
+      .hoy b {
+        color: var(--vivo);
+        font-weight: 400;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        font-size: 11px;
+        margin-right: 8px;
+      }
+      .hoy span {
+        color: var(--khaki);
+      }
+      .hoy span i {
+        color: var(--hueso);
+        font-style: normal;
+      }
+
+      /* ---- 4. pear ---- */
+      .comando {
+        font-size: clamp(15px, 2.1vw, 30px);
+        color: var(--vivo);
+        word-break: break-all;
+        border: 1px solid var(--vivo);
+        background: rgba(255, 176, 0, 0.05);
+        padding: 26px 28px;
+        line-height: 1.4;
+      }
+      .bajo {
+        margin-top: 28px;
+        font-size: clamp(16px, 1.9vw, 23px);
+        color: var(--hueso);
+        max-width: 40ch;
+        line-height: 1.4;
+      }
+
+      /* ---- 5. inventario ---- */
+      .inv {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+        gap: 16px;
+      }
+      .col {
+        border: 1px solid var(--linea);
+        background: var(--caja);
+        padding: 20px 22px;
+      }
+      .col.no {
+        border-color: var(--muerto);
+        background: rgba(216, 65, 47, 0.04);
+      }
+      .col h3 {
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--vivo);
+        font-weight: 700;
+        margin-bottom: 14px;
+      }
+      .col.no h3 {
+        color: var(--muerto);
+      }
+      .col li {
+        list-style: none;
+        color: var(--hueso);
+        font-size: 14px;
+        margin-bottom: 9px;
+        padding-left: 16px;
+        position: relative;
+        line-height: 1.4;
+      }
+      .col li::before {
+        content: '·';
+        position: absolute;
+        left: 3px;
+        color: var(--khaki);
+      }
+      .col.no li::before {
+        content: '×';
+        color: var(--muerto);
+        font-size: 12px;
+      }
+
+      /* ---- 6. transicion ---- */
+      .basta {
+        font-size: clamp(30px, 5.4vw, 68px);
+        font-weight: 700;
+        line-height: 1.1;
+        text-transform: uppercase;
+        letter-spacing: 0.01em;
+      }
+      .banda {
+        margin-top: 5vh;
+        padding: 22px 26px;
+        border: 1px solid var(--muerto);
+        color: var(--muerto);
+        background: rgba(216, 65, 47, 0.06);
+        font-size: clamp(17px, 2.4vw, 30px);
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+      .banda small {
+        display: block;
+        margin-top: 9px;
+        font-size: 13px;
+        font-weight: 400;
+        letter-spacing: 0.04em;
+        opacity: 0.8;
+      }
+
+      .ayuda {
+        position: absolute;
+        bottom: 20px;
+        left: 30px;
+        font-size: 11px;
+        color: var(--linea);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="clasif">// Shard // Aleph Hackathon 2026 // Built on Pear //</div>
+
+    <!-- 1 ................................................................. -->
+    <section class="slide viva">
+      <div class="wordmark">sha<i>/</i>rd</div>
+      <div class="tesis">
+        A language model, sharded layer&#8209;by&#8209;layer across peers. On Pear.<span
+          class="cursor"
+        ></span>
+      </div>
+    </section>
+
+    <!-- 2 ................................................................. -->
+    <section class="slide">
+      <div class="rot">§ 01 — The switch someone else owns</div>
+      <div class="cifras">
+        <div class="cifra">
+          <div class="n">25</div>
+          <div class="q">countries where ChatGPT is not available</div>
+          <div class="f">World Population Review, Aug 2026</div>
+        </div>
+        <div class="cifra">
+          <div class="n">313</div>
+          <div class="q">internet shutdowns across 52 countries in 2025 — a record</div>
+          <div class="f">Access Now, #KeepItOn</div>
+        </div>
+      </div>
+      <p class="remate">A model that lives on a server inherits that server's switch.</p>
+    </section>
+
+    <!-- 3 ................................................................. -->
+    <section class="slide">
+      <div class="rot">§ 02 — How it works</div>
+      <div class="diagrama">
+        <div class="fila">
+          <div class="peer p0">
+            <div class="id">laptop1</div>
+            <div class="det">ggml-rpc-server :50053 · Metal</div>
+            <div class="cap">layers 0–14 · offers 1 GB</div>
+          </div>
+          <div class="peer p1">
+            <div class="id">laptop2</div>
+            <div class="det">ggml-rpc-server :50052 · Metal</div>
+            <div class="cap">layers 15–27 · offers 1 GB</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="tira">
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa a"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+            <div class="capa b"></div>
+          </div>
+          <div class="escala"><span>Llama 3.2 3B Q4_K_M · layer 00</span><span>layer 27</span></div>
+        </div>
+
+        <dl class="cables">
+          <div class="cable pulso">
+            <dt>Discovery</dt>
+            <dd>UDP sweep on the LAN<br /><em>ficha: label, RAM, GB offered, rpc port</em></dd>
+          </div>
+          <div class="cable">
+            <dt>Assignment</dt>
+            <dd>
+              No coordinator<br /><em>every node sorts peers by id and reaches the same split</em>
+            </dd>
+          </div>
+          <div class="cable">
+            <dt>Transport</dt>
+            <dd>llama.cpp RPC over TCP<br /><em>one --rpc list drives every shard</em></dd>
+          </div>
+          <div class="cable">
+            <dt>Delivery</dt>
+            <dd>Pear · Hyperdrive<br /><em>install by key, OTA deltas to running apps</em></dd>
+          </div>
+        </dl>
+
+        <div class="hoy">
+          <span><b>Today</b> LAN · <i>2 peers</i> · one owner per layer</span>
+          <span><b>Next</b> WAN via a DHT tunnel · redundancy</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 ................................................................. -->
+    <section class="slide">
+      <div class="rot">§ 03 — Pear-native</div>
+      <div class="comando">
+        pear install --to ~/shard<br />pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo
+      </div>
+      <p class="bajo">
+        No registry, no release page. It arrives from the peers, and it updates itself over the air.
+        You will see that happen in the demo.
+      </p>
+    </section>
+
+    <!-- 5 ................................................................. -->
+    <section class="slide">
+      <div class="rot">§ 04 — What is ours, what is not</div>
+      <div class="inv">
+        <div class="col">
+          <h3>We built</h3>
+          <ul>
+            <li>Shard planning with no coordinator</li>
+            <li>Peer discovery and liveness on the LAN</li>
+            <li>Each node runs its own layer server</li>
+            <li>The status panel, over SSE</li>
+          </ul>
+        </div>
+        <div class="col">
+          <h3>The stack gives</h3>
+          <ul>
+            <li>Pear — distribution, OTA, Hyperdrive</li>
+            <li>Bare — the standalone binary</li>
+            <li>llama.cpp — RPC backend, layer split</li>
+          </ul>
+        </div>
+        <div class="col no">
+          <h3>It does not</h3>
+          <ul>
+            <li>Prove a peer really ran your layers</li>
+            <li>Survive a peer leaving — no redundancy yet</li>
+            <li>Cross subnets, or use phones as shards</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 ................................................................. -->
+    <section class="slide">
+      <div class="basta">Enough slides.<br />Watch it think.</div>
+      <div class="banda">
+        MODEL INCOMPLETE — LAYERS 15-27 MISSING
+        <small>15 of 28 layers. The model cannot think until another machine joins.</small>
+      </div>
+    </section>
+
+    <div class="num" id="num">01 / 06</div>
+    <div class="ayuda">← → · space · F</div>
+
+    <script>
+      var slides = document.querySelectorAll('.slide')
+      var i = 0
+
+      function mostrar(n) {
+        i = Math.max(0, Math.min(slides.length - 1, n))
+        for (var k = 0; k < slides.length; k++) slides[k].classList.toggle('viva', k === i)
+        document.getElementById('num').textContent =
+          ('0' + (i + 1)).slice(-2) + ' / ' + ('0' + slides.length).slice(-2)
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+          e.preventDefault()
+          mostrar(i + 1)
+        } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+          e.preventDefault()
+          mostrar(i - 1)
+        } else if (e.key === 'Home') mostrar(0)
+        else if (e.key === 'End') mostrar(slides.length - 1)
+        else if (e.key === 'f' || e.key === 'F') {
+          if (document.fullscreenElement) document.exitFullscreen()
+          else document.documentElement.requestFullscreen()
+        }
+      })
+
+      // Click para avanzar: en una grabación es menos ruidoso que buscar la flecha.
+      document.addEventListener('click', function () {
+        mostrar(i + 1)
+      })
+
+      mostrar(0)
+    </script>
+  </body>
+</html>
