@@ -99,7 +99,7 @@ const { etiqueta, ramGB, ofreceGB, rpcPort } = nodo.ficha
 
 nodo.on('listening', (info) => {
   console.log(
-    `\n[${etiqueta}] en ${info.address}, presta ${ofreceGB}GB de ${ramGB}GB, capas en :${rpcPort}`
+    `\n[${etiqueta}] at ${info.address}, lending ${ofreceGB}GB of ${ramGB}GB, layers on :${rpcPort}`
   )
 })
 
@@ -110,10 +110,10 @@ nodo.on('peer', (peer) => {
 })
 
 nodo.on('peer-lost', (peer) => {
-  console.log(`\n- ${peer.ficha.etiqueta} (${peer.address}) se fue`)
+  console.log(`\n- ${peer.ficha.etiqueta} (${peer.address}) left`)
 })
 
-nodo.on('capas-listas', (puerto) => console.log(`[${etiqueta}] sirviendo capas en :${puerto}`))
+nodo.on('capas-listas', (puerto) => console.log(`[${etiqueta}] serving layers on :${puerto}`))
 nodo.on('estado', (plan) => console.log('\n' + banda(plan, pkg.version).join('\n')))
 nodo.on('error', (err) => console.error('[nodo:error]', err.message))
 
@@ -122,7 +122,7 @@ if (cmd.flags.panel !== false) {
   panel = new Panel({ nodo, puerto: Number(cmd.flags.web) || undefined, version: pkg.version })
   panel.on('error', (err) => console.error('[panel:error]', err.message))
   panel.start()
-  console.log(`Panel en http://localhost:${panel.puerto}`)
+  console.log(`Panel at http://localhost:${panel.puerto}`)
 }
 
 nodo.start()
@@ -136,9 +136,9 @@ if (cmd.flags.ask) {
     nodo
       .preguntar(cmd.flags.ask)
       .on('salida', (txt) => process.stdout.write(txt))
-      .on('error', (err) => console.error(`\nSIN RESPUESTA: ${err.message}`))
+      .on('error', (err) => console.error(`\nNO ANSWER: ${err.message}`))
       .on('fin', () => apagar(0))
   })
 } else {
-  console.log(`\nShard v${pkg.version} corriendo. Ctrl+C para parar.\n`)
+  console.log(`\nShard v${pkg.version} running. Ctrl+C to stop.\n`)
 }

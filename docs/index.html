@@ -729,7 +729,7 @@
     <div class="wrap">
       <div class="hoja">
         <span>Doc <b>SHARD-01</b></span>
-        <span>Rev <b>0.8.0</b></span>
+        <span>Rev <b>0.10.0</b></span>
         <span>Subject <b>Distributed inference</b></span>
         <button class="audio der" id="audio" aria-pressed="false">
           <span class="luz"></span><span id="audio-txt">Enable audio</span>
@@ -745,13 +745,9 @@
         <h1>One model.<br />Many machines.<br /><span class="op">No server.</span></h1>
 
         <p class="sub">
-          An LLM whose layers do not live on any single machine. They are split across devices that
-          find each other on their own — nothing coordinates them.
-          <b>If one leaves, the model cannot think</b>, and the screen says so before you ask.
-        </p>
-        <p class="sub" style="margin-top: 16px; padding-top: 0; border-top: 0">
-          Not a chat client with a peer-to-peer backend. The weights themselves are what gets
-          distributed.
+          A language model split across the machines in one room.
+          <b>No server to shut down, no address to block.</b> Once every machine has it, the model
+          keeps answering with the internet cut.
         </p>
 
         <div class="botones">
@@ -786,6 +782,10 @@
 
       <section id="problem">
         <h2><span class="num">§ 01</span> The problem</h2>
+        <p class="grande">
+          Using a hosted model is a permission. Permissions get revoked — and usually not by the
+          company. By a government.
+        </p>
         <div class="cifras">
           <div class="cifra">
             <div class="n">25</div>
@@ -798,173 +798,95 @@
             <div class="f">Access Now, #KeepItOn</div>
           </div>
         </div>
-        <p class="grande">
-          A model that lives on a server inherits that server's switch. Whoever owns the machine
-          decides whether you get to think with it today — and running one yourself means owning
-          hardware big enough to hold the whole model, which is exactly what most people do not
-          have.
-        </p>
         <p class="tenue">
-          Meanwhile the room is full of idle GPUs. Every laptop at the table could hold a piece of
-          the model. Nothing lets them hold it together.
+          Both numbers describe the same lever. A model reachable at an address can be blocked at
+          that address, and a model that needs the internet dies when the internet is turned off.
         </p>
       </section>
 
       <section id="solution">
-        <h2><span class="num">§ 02</span> The solution</h2>
+        <h2><span class="num">§ 02</span> The answer</h2>
         <p class="grande">
-          Split the model itself. Llama 3.2 3B has 28 layers; Shard hands each machine a range of
-          them. No machine holds the whole model, and no server decides who holds what — every node
-          runs the same arithmetic over the same peer list and reaches the same answer on its own.
+          Take the address away. Shard splits the model's 28 layers across the machines you can see,
+          and they find each other on the local network. No coordinator decides the split: every
+          node runs the same arithmetic over the same peer list and lands on the same answer.
+        </p>
+        <p class="tenue">
+          Nothing leaves the room. Once the app and the weights are on each machine, an internet
+          shutdown does not reach it.
         </p>
 
         <div class="figura" style="margin-top: 30px">
           <div class="cabecera">
-            <b>Fig. 01</b><span>Status panel — one machine present</span>
-            <span class="der">Refused</span>
+            <b>Fig. 01</b><span>One machine present</span><span class="der">Refused</span>
           </div>
           <div class="interior">
             <div class="banda muerta">
               MODEL INCOMPLETE — LAYERS 15-27 MISSING
               <small>15 of 28 layers. The model cannot think until another machine joins.</small>
             </div>
-            <div class="tira">
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-              <div class="capa falta"></div>
-            </div>
+            <div class="tira" id="tira1"></div>
             <div class="rotulos">
               <div class="rotulo a" style="flex-grow: 15">laptop1 · 0-14</div>
               <div class="rotulo falta" style="flex-grow: 13">missing · 15-27</div>
             </div>
-            <div class="regla"><span>Layer 00</span><span>Layer 27</span></div>
           </div>
         </div>
 
         <div class="figura">
           <div class="cabecera">
-            <b>Fig. 02</b><span>Status panel — second machine joined</span>
-            <span class="der">Operational</span>
+            <b>Fig. 02</b><span>Second machine joined</span><span class="der">Operational</span>
           </div>
           <div class="interior">
             <div class="banda viva">
               MODEL COMPLETE
               <small>28 of 28 layers served by 2 machine(s)</small>
             </div>
-            <div class="tira">
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa a"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-              <div class="capa b"></div>
-            </div>
+            <div class="tira" id="tira2"></div>
             <div class="rotulos">
               <div class="rotulo a" style="flex-grow: 15">laptop1 · 0-14</div>
               <div class="rotulo b" style="flex-grow: 13">laptop2 · 15-27</div>
             </div>
-            <div class="regla"><span>Layer 00</span><span>Layer 27</span></div>
           </div>
         </div>
         <p class="pie-fig">
-          No operator assigned those ranges. Both machines computed the same split independently.
+          No operator assigned those ranges. Both machines worked them out alone.
         </p>
-
-        <div class="cta" style="margin-top: 44px">
-          <div class="rot">Ready to run</div>
-          <h3>Two machines are enough</h3>
-          <p>
-            One holds the first half of the model, the other holds the rest. Neither one can answer
-            alone, and that is the point.
-          </p>
-          <div class="botones" style="margin-top: 0">
-            <a class="boton lleno" href="#deploy">Deployment procedure</a>
-          </div>
-        </div>
       </section>
 
       <section id="stack">
-        <h2><span class="num">§ 03</span> The stack</h2>
+        <h2><span class="num">§ 03</span> How it works</h2>
         <div class="grilla">
           <div class="tarjeta">
             <div class="que">01 · Distribution</div>
             <h3>Pear + Bare</h3>
             <p>
-              The app ships as a standalone binary over Hyperdrive. Updates travel as deltas to
-              running instances — an 80MB binary costs about 6MB on the wire. A peer with a public
-              IP reseeds the bundle around the clock, because both of our laptops are firewalled and
-              could not hole punch to each other. It holds a copy and nothing else.
+              One standalone binary, fetched by key and updated over the air. Only changed blocks
+              travel: 80MB on disk, about 6MB on the wire.
             </p>
           </div>
           <div class="tarjeta">
             <div class="que">02 · Discovery</div>
             <h3>UDP on the LAN</h3>
             <p>
-              Nodes announce themselves by sweeping the local subnet. Hyperswarm could not hole
-              punch between two firewalled laptops, so on the LAN we do not ask it to.
+              Each node sweeps its own subnet and announces what it can hold. No tracker, no
+              bootstrap server.
             </p>
           </div>
           <div class="tarjeta">
             <div class="que">03 · Planning</div>
             <h3>No coordinator</h3>
             <p>
-              Peers are sorted by a stable id and layers are handed out in order. Every node
-              computes the same plan independently. Nothing votes, nothing is elected.
+              Peers sorted by a stable id, layers handed out in order. Nothing votes and nothing is
+              elected.
             </p>
           </div>
           <div class="tarjeta">
             <div class="que">04 · Inference</div>
             <h3>llama.cpp RPC</h3>
             <p>
-              Each machine runs a <code>ggml-rpc-server</code> holding its layers in GPU memory. The
-              asking node drives them all through one <code>--rpc</code> list.
+              Every machine keeps its layers in GPU memory. The asking node drives them all through
+              one <code>--rpc</code> list.
             </p>
           </div>
         </div>
@@ -976,60 +898,50 @@
           <div class="nota">
             <b>Hyperswarm never closed the hole punch between our two laptops.</b>
             <p>
-              Both report <code>firewalled true</code>. Same WiFi, different WiFi, phone hotspot on
-              CGNAT: network timeout every time. On the LAN we stopped asking it to, and sweep the
-              subnet over UDP instead.
+              Same WiFi, different WiFi, hotspot on CGNAT — timeout every time. On the LAN we sweep
+              UDP instead.
             </p>
           </div>
           <div class="nota">
             <b>A layer server cannot tell you when it is ready.</b>
             <p>
-              <code>ggml-rpc-server</code> is C, and with stdout on a pipe it block-buffers, so
-              <code>Starting RPC server</code> never arrives. Readiness is a TCP knock on the port
-              instead of a line of output.
+              <code>ggml-rpc-server</code> block-buffers stdout on a pipe, so we knock on the port
+              instead of reading its output.
             </p>
           </div>
           <div class="nota">
             <b>llama-cli writes its answer to the terminal, not to your pipe.</b>
             <p>
-              Its chat interface goes straight to the controlling terminal. Our tests redirected
-              output to a file, so there was no TTY and it passed here while failing on a real
-              machine. <code>--simple-io</code> is the fix.
+              It passed our tests, which had no TTY, and failed on a real machine.
+              <code>--simple-io</code> is the fix.
             </p>
           </div>
         </div>
       </section>
 
       <section id="deploy">
-        <h2><span class="num">§ 04</span> Deployment procedure</h2>
-        <p class="tenue" style="margin-bottom: 32px">
-          Five steps, on every machine that will serve layers. Steps 01 to 03 are one-time setup;
-          after that, Shard updates itself over the air.
+        <h2><span class="num">§ 04</span> Deployment</h2>
+        <p class="tenue" style="margin-bottom: 30px">
+          On every machine that will serve layers. Steps 01 to 03 are one-time; after that it
+          updates itself.
         </p>
 
         <div class="paso">
           <div class="rot">Step 01</div>
           <h3>Install the Pear runtime</h3>
-          <p>
-            Shard is not on npm and has no download page. It is fetched peer-to-peer by the Pear
-            runtime, so that comes first. Needs Node 22 or newer.
-          </p>
+          <p>Node 22 or newer. Running <code>pear</code> once finishes the setup.</p>
           <div class="bloque">
             <pre>
 npm i -g pear
 pear</pre
             >
           </div>
-          <p>Running <code>pear</code> once with no arguments finishes the setup.</p>
         </div>
 
         <div class="paso">
           <div class="rot">Step 02</div>
           <h3>Build llama.cpp with RPC</h3>
-          <p>
-            This is what actually holds the layers and does the math. The RPC backend is off by
-            default, so it has to be compiled in. On Apple Silicon add Metal for the GPU.
-          </p>
+          <p>The RPC backend is off by default. On Apple Silicon add Metal.</p>
           <div class="bloque">
             <pre>
 git clone https://github.com/ggml-org/llama.cpp
@@ -1038,19 +950,12 @@ cmake -B build -DGGML_RPC=ON -DGGML_METAL=ON -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release -j8</pre
             >
           </div>
-          <p>
-            This produces <code>build/bin/ggml-rpc-server</code> and
-            <code>build/bin/llama-cli</code>, which is what Shard looks for.
-          </p>
         </div>
 
         <div class="paso">
           <div class="rot">Step 03</div>
-          <h3>Get the model</h3>
-          <p>
-            Shard does not distribute the weights — each machine fetches the same GGUF itself. About
-            1.9 GB.
-          </p>
+          <h3>Get the weights</h3>
+          <p>1.9 GB. Shard looks in the working directory, then <code>$HOME</code>.</p>
           <div class="bloque">
             <pre>
 mkdir -p ~/models
@@ -1058,67 +963,32 @@ curl -L -o ~/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
   https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf</pre
             >
           </div>
-          <p>Shard searches the working directory first, then <code>$HOME</code>.</p>
         </div>
 
         <div class="paso">
           <div class="rot">Step 04</div>
-          <h3>Install Shard, peer-to-peer</h3>
-          <p>
-            No registry, no CDN, no release page. The app arrives from whoever is seeding it,
-            addressed by key. The target directory has to exist first.
-          </p>
+          <h3>Install Shard</h3>
+          <p>No registry, no release page. The target directory has to exist first.</p>
           <div class="bloque">
             <pre>
 mkdir -p ~/shard
 pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo</pre
             >
           </div>
-          <p>
-            On macOS the first run asks for
-            <b style="color: var(--hueso)">Local Network</b> permission. Without it, discovery finds
-            nobody.
-          </p>
         </div>
 
         <div class="paso">
           <div class="rot">Step 05</div>
-          <h3>Run one command per machine</h3>
+          <h3>Run it</h3>
           <p>
-            <code>--offer</code> is how many GB of layers this machine lends; at roughly 68 MB per
-            layer, 1 GB is about 15 layers. Give each machine its own port.
-          </p>
-          <div class="bloque">
-            <pre><span class="com"># machine one</span>
-~/shard/hello-pear-bare --label laptop1 --port 50053 --offer 1
-
-<span class="com"># machine two</span>
-~/shard/hello-pear-bare --label laptop2 --port 50052 --offer 1</pre>
-          </div>
-          <p>
-            Then open <code>localhost:7777</code> on either machine. The panel shows the split live,
-            and the band turns amber the moment the 28 layers are covered.
-          </p>
-        </div>
-
-        <div class="cta" style="margin-top: 44px">
-          <div class="rot">One line to start</div>
-          <h3>Pull the app off the network</h3>
-          <p>
-            The whole install is a key. Nothing in the middle decides whether you are allowed to
-            have it.
+            <code>--offer</code> is how many GB this machine lends — about 15 layers per GB. Then
+            open <code>localhost:7777</code>.
           </p>
           <div class="bloque">
             <pre>
-pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo</pre
+~/shard/hello-pear-bare --label laptop1 --port 50053 --offer 1
+~/shard/hello-pear-bare --label laptop2 --port 50052 --offer 1</pre
             >
-          </div>
-          <div class="botones" style="margin-top: 16px">
-            <a class="boton lleno" href="https://github.com/tomazzi14/shard-free"
-              >Read the source</a
-            >
-            <a class="boton vacio" href="deck/">Pitch deck</a>
-            <a class="boton vacio" href="#limits">Known limitations</a>
           </div>
         </div>
       </section>
@@ -1130,29 +1000,15 @@ pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobd
           <div class="cuerpo">
             <div class="titulo">Read before deploying on a network you do not control</div>
             <ul>
-              <li>
-                <b>It does not cross subnets.</b> Discovery is LAN-only. Two machines on different
-                networks will not find each other.
-              </li>
-              <li>
-                <b>It does not punch through symmetric NAT.</b> Two peers both behind it need a
-                relay, which the Pear CLI does not expose.
-              </li>
+              <li><b>LAN only.</b> Machines on different networks will not find each other.</li>
+              <li><b>No relay for symmetric NAT.</b> The Pear CLI does not expose one.</li>
               <li>
                 <b>The RPC link is neither encrypted nor authenticated.</b> Anything on your LAN
                 that reaches the port can use your GPU.
               </li>
-              <li>
-                <b>It cannot prove a peer really ran your layers.</b> No attestation, no
-                verification. You are trusting the machines you invited.
-              </li>
-              <li>
-                <b>There is no redundancy.</b> Every layer has exactly one owner. One machine
-                leaving breaks the model until it returns.
-              </li>
-              <li>
-                <b>It does not distribute the model.</b> Each machine downloads the GGUF itself.
-              </li>
+              <li><b>No proof a peer ran your layers.</b> You trust the machines you invited.</li>
+              <li><b>No redundancy.</b> One owner per layer; lose it and the model stops.</li>
+              <li><b>The weights are not distributed.</b> Each machine fetches the GGUF itself.</li>
             </ul>
           </div>
         </div>
@@ -1163,24 +1019,17 @@ pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobd
         <dl class="proximo">
           <div>
             <dt>Beyond the LAN</dt>
-            <dd>
-              Reach peers across networks, with a relay for the symmetric-NAT case the Pear CLI does
-              not expose today.
-            </dd>
+            <dd>Reach peers across networks, with a relay for the symmetric-NAT case.</dd>
           </div>
           <div>
             <dt>Redundancy</dt>
             <dd>
-              More than one machine per layer range, so a peer leaving degrades the model instead of
-              stopping it.
+              More than one machine per range, so a peer leaving degrades instead of stopping.
             </dd>
           </div>
           <div>
             <dt>Paying the peers</dt>
-            <dd>
-              Lending memory to a stranger should be worth something. Designed, not built:
-              micropayments in USDT via WDK.
-            </dd>
+            <dd>Designed, not built: micropayments in USDT via WDK.</dd>
           </div>
         </dl>
 
@@ -1207,6 +1056,20 @@ pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobd
 
     <div class="clasif pie">// Unclassified // Open source // No central command //</div>
 
+    <script>
+      // Las tiras de capas se arman acá y no a mano: 56 divs escritos uno por uno eran la
+      // mitad del peso de la página.
+      function pintarTira(id, corte) {
+        var t = document.getElementById(id)
+        for (var i = 0; i < 28; i++) {
+          var d = document.createElement('div')
+          d.className = 'capa ' + (i < 15 ? 'a' : corte)
+          t.appendChild(d)
+        }
+      }
+      pintarTira('tira1', 'falta')
+      pintarTira('tira2', 'b')
+    </script>
     <script>
       ;(function () {
         // Sonido sintetizado, sin archivos: la página tiene que seguir siendo un solo archivo

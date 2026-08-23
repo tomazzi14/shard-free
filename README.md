@@ -26,14 +26,21 @@ pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo
 
 ## Why
 
-Hosted assistants like ChatGPT are unavailable in 25 countries. In 2025 there were 313 internet shutdowns across
-52 countries, the highest number on record.
+Using a hosted model is a permission, and permissions get revoked — usually not by the
+company that runs it, but by a government.
+
+Hosted assistants like ChatGPT are unavailable in 25 countries. In 2025 there were 313
+internet shutdowns across 52 countries, the highest number on record.
 
 <sub>Sources: ChatGPT availability, World Population Review (August 2026); Access Now, #KeepItOn.</sub>
 
-A model that lives on a server inherits that server's switch — whoever owns it decides
-whether you get to think with it today. Shard has no server to switch off. The model lives
-in the machines of the people using it, and it only works when enough of them show up.
+Both numbers describe the same lever. A model reachable at an address can be blocked at
+that address, and a model that needs the internet dies when the internet is turned off.
+
+Shard has no address. The layers live in the machines of the people using them, they find
+each other on the local network, and once each machine has the app and the weights, an
+internet shutdown does not reach them. The trade is honest: it only works when enough of
+those machines show up.
 
 ---
 
