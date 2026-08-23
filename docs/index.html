@@ -31,82 +31,73 @@
   .wrap { max-width: 1000px; margin: 0 auto; padding: 0 28px; }
   a { color: var(--vivo); }
 
-  /* ---- barra de clasificación, arriba y abajo ---- */
   .clasif {
     text-align: center; font-size: 10px; letter-spacing: 0.42em;
     text-transform: uppercase; color: var(--khaki);
-    padding: 8px 0; border-bottom: 1px solid var(--linea);
-    background: rgba(0,0,0,0.45);
+    padding: 8px 0; border-bottom: 1px solid var(--linea); background: rgba(0,0,0,0.45);
   }
   .clasif.pie { border-bottom: 0; border-top: 1px solid var(--linea); }
 
-  /* ---- encabezado de hoja ---- */
   .hoja {
-    display: flex; flex-wrap: wrap; gap: 18px;
-    padding: 12px 0; border-bottom: 1px solid var(--linea);
+    display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
+    padding: 11px 0; border-bottom: 1px solid var(--linea);
     font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--khaki);
   }
   .hoja .der { margin-left: auto; }
   .hoja b { color: var(--hueso); font-weight: 400; }
 
-  /* ---- héroe ---- */
-  header { padding: 84px 0 60px; position: relative; }
-  /* marcas de registro en las esquinas del héroe */
-  .cruz { position: absolute; color: var(--linea); font-size: 15px; line-height: 1; }
-  .cruz.ai { top: 34px; left: -6px; }
-  .cruz.ad { top: 34px; right: -6px; }
-  .cruz.bi { bottom: 18px; left: -6px; }
-  .cruz.bd { bottom: 18px; right: -6px; }
-
-  .kicker {
-    font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase;
-    color: var(--vivo); margin-bottom: 26px;
+  /* ---- interruptor de audio ---- */
+  .audio {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+    border: 1px solid var(--linea); padding: 4px 11px; color: var(--khaki);
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; background: none;
   }
+  .audio:hover { border-color: var(--vivo); color: var(--vivo); }
+  .audio .luz { width: 6px; height: 6px; background: var(--linea); flex: none; }
+  .audio.on { color: var(--vivo); border-color: var(--vivo); }
+  .audio.on .luz { background: var(--vivo); animation: latir 1.6s infinite; }
+  @keyframes latir { 0%,100% { opacity: 1 } 50% { opacity: 0.25 } }
+
+  header { padding: 80px 0 58px; position: relative; }
+  .cruz { position: absolute; color: var(--linea); font-size: 15px; line-height: 1; }
+  .cruz.ai { top: 32px; left: -6px; }  .cruz.ad { top: 32px; right: -6px; }
+  .cruz.bi { bottom: 16px; left: -6px; } .cruz.bd { bottom: 16px; right: -6px; }
+
+  .kicker { font-size: 11px; letter-spacing: 0.34em; text-transform: uppercase;
+            color: var(--vivo); margin-bottom: 26px; }
   .kicker span { color: var(--linea); margin: 0 10px; }
 
-  h1 {
-    margin: 0; font-size: clamp(34px, 7.2vw, 82px); line-height: 1.02;
-    font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase;
-  }
+  h1 { margin: 0; font-size: clamp(34px, 7.2vw, 82px); line-height: 1.02;
+       font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
   h1 .op { color: var(--khaki); }
 
-  .sub {
-    margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--linea);
-    font-size: 16px; color: var(--khaki); max-width: 620px;
-  }
+  .sub { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--linea);
+         font-size: 16px; color: var(--khaki); max-width: 620px; }
   .sub b { color: var(--hueso); font-weight: 400; }
 
   .botones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
-  .boton {
-    display: inline-block; text-decoration: none; padding: 13px 26px;
-    font-weight: 700; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
-  }
+  .boton { display: inline-block; text-decoration: none; padding: 13px 26px; cursor: pointer;
+           font-family: var(--mono); font-weight: 700; font-size: 12px;
+           letter-spacing: 0.18em; text-transform: uppercase; border: 1px solid transparent; }
   .boton.lleno { background: var(--vivo); color: #0B0B0A; }
-  .boton.vacio { border: 1px solid var(--linea); color: var(--hueso); }
+  .boton.lleno:hover { background: #FFC33D; }
+  .boton.vacio { border-color: var(--linea); color: var(--hueso); background: none; }
   .boton.vacio:hover { border-color: var(--vivo); color: var(--vivo); }
 
-  /* ---- hoja de datos ---- */
-  .datos {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    border: 1px solid var(--linea); border-bottom: 0;
-  }
-  .datos div {
-    padding: 15px 18px; border-bottom: 1px solid var(--linea); border-right: 1px solid var(--linea);
-  }
+  .datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+           border: 1px solid var(--linea); border-bottom: 0; margin: 0; }
+  .datos div { padding: 15px 18px; border-bottom: 1px solid var(--linea);
+               border-right: 1px solid var(--linea); }
   .datos div:last-child { border-right: 0; }
-  .datos dt {
-    font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase;
-    color: var(--khaki); margin-bottom: 6px;
-  }
+  .datos dt { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase;
+              color: var(--khaki); margin-bottom: 6px; }
   .datos dd { margin: 0; font-size: 14px; color: var(--hueso); }
 
-  /* ---- figuras ---- */
   .figura { border: 1px solid var(--linea); background: var(--caja); margin-bottom: 18px; }
-  .figura .cabecera {
-    display: flex; gap: 14px; align-items: center;
+  .figura .cabecera { display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
     padding: 9px 16px; border-bottom: 1px solid var(--linea);
-    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--khaki);
-  }
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--khaki); }
   .figura .cabecera b { color: var(--vivo); font-weight: 700; }
   .figura .cabecera .der { margin-left: auto; }
   .figura .interior { padding: 20px; }
@@ -120,12 +111,9 @@
 
   .tira { display: flex; gap: 2px; margin-top: 12px; }
   .capa { flex: 1; height: 34px; }
-  .capa.a { background: var(--vivo); }
-  .capa.b { background: var(--cian); }
-  .capa.falta {
-    border: 1px solid var(--muerto);
-    background: repeating-linear-gradient(-45deg, rgba(216,65,47,0.25) 0 5px, transparent 5px 10px);
-  }
+  .capa.a { background: var(--vivo); } .capa.b { background: var(--cian); }
+  .capa.falta { border: 1px solid var(--muerto);
+    background: repeating-linear-gradient(-45deg, rgba(216,65,47,0.25) 0 5px, transparent 5px 10px); }
   .rotulos { display: flex; gap: 2px; margin-top: 6px; font-size: 11px; letter-spacing: 0.1em; }
   .rotulo { padding: 4px 8px; border-top: 2px solid; white-space: nowrap; overflow: hidden;
             text-transform: uppercase; }
@@ -134,50 +122,67 @@
   .rotulo.falta { color: var(--muerto); border-color: var(--muerto); }
   .regla { display: flex; justify-content: space-between; font-size: 10px;
            letter-spacing: 0.12em; color: var(--khaki); margin-top: 5px; }
-  .pie-fig { font-size: 11px; color: var(--khaki); letter-spacing: 0.06em; margin: 0 0 30px; }
+  .pie-fig { font-size: 11px; color: var(--khaki); letter-spacing: 0.06em; margin: 0; }
 
-  /* ---- secciones ---- */
   section { padding: 52px 0; border-top: 1px solid var(--linea); }
-  h2 {
-    font-size: 12px; text-transform: uppercase; letter-spacing: 0.24em;
-    color: var(--hueso); font-weight: 700; margin: 0 0 24px;
-    display: flex; align-items: center; gap: 14px;
-  }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.24em;
+       color: var(--hueso); font-weight: 700; margin: 0 0 24px;
+       display: flex; align-items: center; gap: 14px; }
   h2 .num { color: var(--vivo); }
   h2::after { content: ''; flex: 1; height: 1px;
-              background: repeating-linear-gradient(90deg, var(--linea) 0 6px, transparent 6px 10px); }
+    background: repeating-linear-gradient(90deg, var(--linea) 0 6px, transparent 6px 10px); }
   h3 { font-size: 14px; margin: 0 0 6px; color: var(--hueso); font-weight: 700;
        letter-spacing: 0.1em; text-transform: uppercase; }
   p { margin: 0 0 14px; }
   .grande { font-size: 19px; line-height: 1.6; color: var(--hueso); max-width: 720px; }
+  .tenue { color: var(--khaki); max-width: 720px; }
 
-  pre {
-    background: var(--caja); border: 1px solid var(--linea); border-left: 2px solid var(--vivo);
-    padding: 14px 16px; overflow-x: auto; font-size: 13px; color: var(--hueso); margin: 0 0 12px;
-  }
+  .bloque { position: relative; }
+  pre { background: var(--caja); border: 1px solid var(--linea); border-left: 2px solid var(--vivo);
+        padding: 14px 16px; overflow-x: auto; font-size: 13px; color: var(--hueso); margin: 0 0 12px; }
   pre .com { color: var(--khaki); }
   code { color: var(--vivo); }
   p code, li code { font-size: 13px; }
+  .copiar { position: absolute; top: 8px; right: 8px; cursor: pointer;
+    background: var(--bg); border: 1px solid var(--linea); color: var(--khaki);
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em;
+    text-transform: uppercase; padding: 4px 9px; }
+  .copiar:hover { border-color: var(--vivo); color: var(--vivo); }
+  .copiar.listo { border-color: var(--vivo); color: var(--vivo); }
 
   .grilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px; }
-  .tarjeta { border: 1px solid var(--linea); background: var(--caja); padding: 20px; }
+  .tarjeta { border: 1px solid var(--linea); background: var(--caja); padding: 20px;
+             transition: border-color 0.12s; }
+  .tarjeta:hover { border-color: var(--khaki); }
   .tarjeta p { color: var(--khaki); font-size: 14px; margin: 0; }
   .tarjeta .que { color: var(--vivo); font-size: 10px; text-transform: uppercase;
                   letter-spacing: 0.22em; margin-bottom: 10px; }
+
+  /* ---- procedimiento numerado ---- */
+  .paso { border-left: 1px solid var(--linea); padding: 0 0 32px 26px; margin-left: 5px;
+          position: relative; }
+  .paso:last-child { border-left-color: transparent; padding-bottom: 0; }
+  .paso::before { content: ''; position: absolute; left: -5px; top: 7px;
+                  width: 9px; height: 9px; background: var(--vivo); }
+  .paso .rot { font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase;
+               color: var(--vivo); margin-bottom: 7px; }
 
   ul { padding-left: 20px; margin: 0; }
   li { margin-bottom: 9px; color: var(--khaki); }
   li b { color: var(--hueso); font-weight: 400; }
 
   .aviso { display: flex; border: 1px solid var(--muerto); background: rgba(216,65,47,0.04); }
-  .aviso .franja {
-    width: 16px; flex: none;
-    background: repeating-linear-gradient(-45deg, var(--muerto) 0 8px, transparent 8px 16px);
-    opacity: 0.65;
-  }
+  .aviso .franja { width: 16px; flex: none; opacity: 0.65;
+    background: repeating-linear-gradient(-45deg, var(--muerto) 0 8px, transparent 8px 16px); }
   .aviso .cuerpo { padding: 22px 26px; }
   .aviso .titulo { color: var(--muerto); font-size: 11px; letter-spacing: 0.2em;
                    text-transform: uppercase; font-weight: 700; margin-bottom: 14px; }
+
+  .cta { border: 1px solid var(--vivo); background: rgba(255,176,0,0.04); padding: 32px; }
+  .cta .rot { font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase;
+              color: var(--vivo); margin-bottom: 12px; }
+  .cta h3 { font-size: 21px; letter-spacing: 0.02em; margin-bottom: 10px; }
+  .cta p { color: var(--khaki); max-width: 580px; margin-bottom: 22px; }
 
   footer { padding: 40px 0; color: var(--khaki); font-size: 12px; letter-spacing: 0.08em; }
   footer a { color: var(--khaki); }
@@ -186,10 +191,10 @@
          font-size: 10px; margin-bottom: 24px; text-transform: uppercase; }
 
   @media (max-width: 700px) {
-    .rotulos { display: none; }
-    .cruz { display: none; }
-    header { padding: 48px 0 40px; }
+    .rotulos, .cruz { display: none; }
+    header { padding: 46px 0 38px; }
     .banda { font-size: 15px; }
+    .cta { padding: 24px 20px; }
   }
 </style>
 </head>
@@ -202,7 +207,9 @@
     <span>Doc <b>SHARD-01</b></span>
     <span>Rev <b>0.8.0</b></span>
     <span>Subject <b>Distributed inference</b></span>
-    <span class="der">Sheet <b>1 of 1</b></span>
+    <button class="audio der" id="audio" aria-pressed="false">
+      <span class="luz"></span><span id="audio-txt">Audio off</span>
+    </button>
   </div>
 
   <header>
@@ -211,11 +218,7 @@
 
     <div class="kicker">Field unit <span>//</span> Llama 3.2 3B <span>//</span> 28 layers</div>
 
-    <h1>
-      One model.<br>
-      Many machines.<br>
-      <span class="op">No server.</span>
-    </h1>
+    <h1>One model.<br>Many machines.<br><span class="op">No server.</span></h1>
 
     <p class="sub">
       An LLM whose layers do not live on any single machine. They are split across devices
@@ -224,8 +227,9 @@
     </p>
 
     <div class="botones">
-      <a class="boton lleno" href="#install">Install it</a>
-      <a class="boton vacio" href="https://github.com/tomazzi14/shard-free">Source on GitHub</a>
+      <a class="boton lleno" href="#deploy">Deploy it</a>
+      <a class="boton vacio" href="#problem">Why it exists</a>
+      <a class="boton vacio" href="https://github.com/tomazzi14/shard-free">Source</a>
     </div>
   </header>
 
@@ -237,16 +241,27 @@
     <div><dt>Delivery</dt><dd>Pear · peer-to-peer</dd></div>
   </dl>
 
-  <section>
-    <h2><span class="num">§ 01</span> What it is</h2>
+  <section id="problem">
+    <h2><span class="num">§ 01</span> The problem</h2>
     <p class="grande">
-      Llama 3.2 3B has 28 layers. Shard hands each machine a range of them. No machine holds
-      the whole model, and no server decides who holds what — every node runs the same
-      arithmetic over the same peer list and reaches the same answer on its own.
+      Running a model means owning one machine big enough to hold all of it. Models grow
+      faster than the machines do, so the accepted answer is to rent someone else's server:
+      your prompts leave your network, and the day that server is down — or decides you are
+      not welcome — you have nothing.
     </p>
-    <p style="color:var(--khaki);max-width:720px">
-      Close one laptop and the strip breaks. That is not an error state we built for the
-      demo; it is what the system honestly is.
+    <p class="tenue">
+      Meanwhile the room is full of idle GPUs. Every laptop at the table could hold a piece
+      of the model. Nothing lets them hold it together.
+    </p>
+  </section>
+
+  <section id="solution">
+    <h2><span class="num">§ 02</span> The solution</h2>
+    <p class="grande">
+      Split the model itself. Llama 3.2 3B has 28 layers; Shard hands each machine a range of
+      them. No machine holds the whole model, and no server decides who holds what — every
+      node runs the same arithmetic over the same peer list and reaches the same answer on
+      its own.
     </p>
 
     <div class="figura" style="margin-top:30px">
@@ -311,10 +326,20 @@
     <p class="pie-fig">
       No operator assigned those ranges. Both machines computed the same split independently.
     </p>
+
+    <div class="cta" style="margin-top:44px">
+      <div class="rot">Ready to run</div>
+      <h3>Two machines are enough</h3>
+      <p>One holds the first half of the model, the other holds the rest. Neither one can
+        answer alone, and that is the point.</p>
+      <div class="botones" style="margin-top:0">
+        <a class="boton lleno" href="#deploy">Deployment procedure</a>
+      </div>
+    </div>
   </section>
 
-  <section>
-    <h2><span class="num">§ 02</span> How it works</h2>
+  <section id="stack">
+    <h2><span class="num">§ 03</span> The stack</h2>
     <div class="grilla">
       <div class="tarjeta">
         <div class="que">01 · Distribution</div>
@@ -343,33 +368,99 @@
     </div>
   </section>
 
-  <section id="install">
-    <h2><span class="num">§ 03</span> Install</h2>
-    <p>Shard is a Pear application. It is not on npm and there is no download page — it is
-      distributed peer-to-peer, by key:</p>
-<pre><span class="com"># the target directory has to exist first</span>
-mkdir -p ~/shard
-pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo</pre>
+  <section id="deploy">
+    <h2><span class="num">§ 04</span> Deployment procedure</h2>
+    <p class="tenue" style="margin-bottom:32px">
+      Five steps, on every machine that will serve layers. Steps 01 to 03 are one-time setup;
+      after that, Shard updates itself over the air.
+    </p>
 
-    <p style="margin-top:22px">It needs llama.cpp built with RPC support, and the model, on
-      every machine that serves layers:</p>
+    <div class="paso">
+      <div class="rot">Step 01</div>
+      <h3>Install the Pear runtime</h3>
+      <p>Shard is not on npm and has no download page. It is fetched peer-to-peer by the Pear
+        runtime, so that comes first. Needs Node 22 or newer.</p>
+      <div class="bloque">
+<pre>npm i -g pear
+pear</pre>
+      </div>
+      <p>Running <code>pear</code> once with no arguments finishes the setup.</p>
+    </div>
+
+    <div class="paso">
+      <div class="rot">Step 02</div>
+      <h3>Build llama.cpp with RPC</h3>
+      <p>This is what actually holds the layers and does the math. The RPC backend is off by
+        default, so it has to be compiled in. On Apple Silicon add Metal for the GPU.</p>
+      <div class="bloque">
 <pre>git clone https://github.com/ggml-org/llama.cpp
-cd llama.cpp &amp;&amp; cmake -B build -DGGML_RPC=ON -DGGML_METAL=ON &amp;&amp; cmake --build build -j8
+cd llama.cpp
+cmake -B build -DGGML_RPC=ON -DGGML_METAL=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release -j8</pre>
+      </div>
+      <p>This produces <code>build/bin/ggml-rpc-server</code> and <code>build/bin/llama-cli</code>,
+        which is what Shard looks for.</p>
+    </div>
 
+    <div class="paso">
+      <div class="rot">Step 03</div>
+      <h3>Get the model</h3>
+      <p>Shard does not distribute the weights — each machine fetches the same GGUF itself.
+        About 1.9 GB.</p>
+      <div class="bloque">
+<pre>mkdir -p ~/models
 curl -L -o ~/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
   https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_K_M.gguf</pre>
+      </div>
+      <p>Shard searches the working directory first, then <code>$HOME</code>.</p>
+    </div>
 
-    <p style="margin-top:22px">Then one command per machine:</p>
-<pre>~/shard/hello-pear-bare --label laptop1 --port 50053 --offer 1</pre>
-    <p style="color:var(--khaki)">
-      <code>--offer 1</code> is how many GB of layers this machine lends. Open
-      <code>localhost:7777</code> and the panel shows the split live. Updates arrive over the
-      air, peer-to-peer: no reinstall, no server.
-    </p>
+    <div class="paso">
+      <div class="rot">Step 04</div>
+      <h3>Install Shard, peer-to-peer</h3>
+      <p>No registry, no CDN, no release page. The app arrives from whoever is seeding it,
+        addressed by key. The target directory has to exist first.</p>
+      <div class="bloque">
+<pre>mkdir -p ~/shard
+pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo</pre>
+      </div>
+      <p>On macOS the first run asks for <b style="color:var(--hueso)">Local Network</b>
+        permission. Without it, discovery finds nobody.</p>
+    </div>
+
+    <div class="paso">
+      <div class="rot">Step 05</div>
+      <h3>Run one command per machine</h3>
+      <p><code>--offer</code> is how many GB of layers this machine lends; at roughly 68 MB
+        per layer, 1 GB is about 15 layers. Give each machine its own port.</p>
+      <div class="bloque">
+<pre><span class="com"># machine one</span>
+~/shard/hello-pear-bare --label laptop1 --port 50053 --offer 1
+
+<span class="com"># machine two</span>
+~/shard/hello-pear-bare --label laptop2 --port 50052 --offer 1</pre>
+      </div>
+      <p>Then open <code>localhost:7777</code> on either machine. The panel shows the split
+        live, and the band turns amber the moment the 28 layers are covered.</p>
+    </div>
+
+    <div class="cta" style="margin-top:44px">
+      <div class="rot">One line to start</div>
+      <h3>Pull the app off the network</h3>
+      <p>The whole install is a key. Nothing in the middle decides whether you are allowed to
+        have it.</p>
+      <div class="bloque">
+<pre>pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobdzg8bo</pre>
+      </div>
+      <div class="botones" style="margin-top:16px">
+        <a class="boton lleno" href="https://github.com/tomazzi14/shard-free">Read the source</a>
+        <a class="boton vacio" href="#limits">Known limitations</a>
+      </div>
+    </div>
   </section>
 
-  <section>
-    <h2><span class="num">§ 04</span> Known limitations</h2>
+  <section id="limits">
+    <h2><span class="num">§ 05</span> Known limitations</h2>
     <div class="aviso">
       <div class="franja"></div>
       <div class="cuerpo">
@@ -401,6 +492,115 @@ curl -L -o ~/models/Llama-3.2-3B-Instruct-Q4_K_M.gguf \
 </div>
 
 <div class="clasif pie">// Unclassified // Open source // No central command //</div>
+
+<script>
+(function () {
+  // Sonido sintetizado, sin archivos: la página tiene que seguir siendo un solo archivo
+  // y sonar igual con la red del venue caída.
+  var ctx = null
+  var encendido = false
+
+  function tono (freq, dur, tipo, vol, desde) {
+    if (!ctx) return
+    var t0 = ctx.currentTime + (desde || 0)
+    var osc = ctx.createOscillator()
+    var g = ctx.createGain()
+    var filtro = ctx.createBiquadFilter()
+    filtro.type = 'bandpass'
+    filtro.frequency.value = freq
+    filtro.Q.value = 1.2
+    osc.type = tipo || 'square'
+    osc.frequency.setValueAtTime(freq, t0)
+    // Ataque instantáneo y caída corta: suena a equipo de comunicaciones, no a sintetizador.
+    g.gain.setValueAtTime(0.0001, t0)
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.004)
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur)
+    osc.connect(filtro); filtro.connect(g); g.connect(ctx.destination)
+    osc.start(t0); osc.stop(t0 + dur + 0.02)
+  }
+
+  var sonidos = {
+    pasar: function () { tono(2100, 0.035, 'square', 0.012) },
+    click: function () { tono(1200, 0.05, 'square', 0.05); tono(1800, 0.06, 'square', 0.04, 0.045) },
+    copia: function () { tono(1046, 0.05, 'triangle', 0.06); tono(1568, 0.09, 'triangle', 0.05, 0.05) },
+    arranque: function () {
+      tono(660, 0.06, 'square', 0.04)
+      tono(990, 0.06, 'square', 0.04, 0.07)
+      tono(1320, 0.12, 'square', 0.045, 0.14)
+    }
+  }
+
+  function sonar (cual) { if (encendido && ctx) sonidos[cual]() }
+
+  var boton = document.getElementById('audio')
+  var texto = document.getElementById('audio-txt')
+
+  boton.addEventListener('click', function () {
+    // El AudioContext sólo puede nacer dentro de un gesto del usuario.
+    if (!ctx) {
+      var AC = window.AudioContext || window.webkitAudioContext
+      if (!AC) { texto.textContent = 'No audio'; boton.disabled = true; return }
+      ctx = new AC()
+    }
+    if (ctx.state === 'suspended') ctx.resume()
+    encendido = !encendido
+    boton.classList.toggle('on', encendido)
+    boton.setAttribute('aria-pressed', String(encendido))
+    texto.textContent = encendido ? 'Audio on' : 'Audio off'
+    if (encendido) sonidos.arranque()
+    try { localStorage.setItem('shard-audio', encendido ? '1' : '0') } catch (e) {}
+  })
+
+  // Si ya lo había prendido antes, avisamos que está a un click, sin sonar sola.
+  try {
+    if (localStorage.getItem('shard-audio') === '1') texto.textContent = 'Audio — click'
+  } catch (e) {}
+
+  var pasables = document.querySelectorAll('.boton, .tarjeta, .datos div, .copiar, .figura .cabecera')
+  for (var i = 0; i < pasables.length; i++) {
+    pasables[i].addEventListener('mouseenter', function () { sonar('pasar') })
+  }
+
+  var clickeables = document.querySelectorAll('.boton')
+  for (var j = 0; j < clickeables.length; j++) {
+    clickeables[j].addEventListener('click', function () { sonar('click') })
+  }
+
+  // Botón de copiar en cada bloque de comandos.
+  var bloques = document.querySelectorAll('.bloque')
+  for (var k = 0; k < bloques.length; k++) {
+    (function (bloque) {
+      var pre = bloque.querySelector('pre')
+      if (!pre) return
+      var b = document.createElement('button')
+      b.className = 'copiar'
+      b.textContent = 'Copy'
+      b.addEventListener('mouseenter', function () { sonar('pasar') })
+      b.addEventListener('click', function () {
+        var texto = pre.innerText.trim()
+        var listo = function () {
+          b.textContent = 'Copied'
+          b.classList.add('listo')
+          sonar('copia')
+          setTimeout(function () { b.textContent = 'Copy'; b.classList.remove('listo') }, 1600)
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(texto).then(listo, function () { b.textContent = 'Failed' })
+        } else {
+          // Sin clipboard API (http, navegador viejo): al menos lo dejamos seleccionado.
+          var r = document.createRange()
+          r.selectNodeContents(pre)
+          var s = window.getSelection()
+          s.removeAllRanges(); s.addRange(r)
+          b.textContent = 'Selected'
+          setTimeout(function () { b.textContent = 'Copy' }, 1600)
+        }
+      })
+      bloque.appendChild(b)
+    })(bloques[k])
+  }
+})()
+</script>
 
 </body>
 </html>
