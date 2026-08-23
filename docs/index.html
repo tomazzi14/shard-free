@@ -520,13 +520,14 @@ pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobd
   }
 
   var sonidos = {
-    pasar: function () { tono(2100, 0.035, 'square', 0.012) },
-    click: function () { tono(1200, 0.05, 'square', 0.05); tono(1800, 0.06, 'square', 0.04, 0.045) },
-    copia: function () { tono(1046, 0.05, 'triangle', 0.06); tono(1568, 0.09, 'triangle', 0.05, 0.05) },
+    // Dos tonos muy juntos: un blip solo suena a pitido, dos suenan a equipo.
+    pasar: function () { tono(2400, 0.022, 'square', 0.05); tono(1600, 0.03, 'square', 0.035, 0.018) },
+    click: function () { tono(1200, 0.05, 'square', 0.09); tono(1800, 0.06, 'square', 0.07, 0.045) },
+    copia: function () { tono(1046, 0.05, 'triangle', 0.10); tono(1568, 0.09, 'triangle', 0.08, 0.05) },
     arranque: function () {
-      tono(660, 0.06, 'square', 0.04)
-      tono(990, 0.06, 'square', 0.04, 0.07)
-      tono(1320, 0.12, 'square', 0.045, 0.14)
+      tono(660, 0.06, 'square', 0.08)
+      tono(990, 0.06, 'square', 0.08, 0.07)
+      tono(1320, 0.12, 'square', 0.09, 0.14)
     }
   }
 
@@ -556,7 +557,8 @@ pear install --to ~/shard pear://k6c99su98pmobmw1c4xqtoacsage1is5ayhq9mqdsc8gobd
     if (localStorage.getItem('shard-audio') === '1') texto.textContent = 'Audio — click'
   } catch (e) {}
 
-  var pasables = document.querySelectorAll('.boton, .tarjeta, .datos div, .copiar, .figura .cabecera')
+  var pasables = document.querySelectorAll(
+    '.boton, .tarjeta, .datos div, .copiar, .figura .cabecera, .paso, .aviso li, h2, .cta, .audio, footer a, .banda')
   for (var i = 0; i < pasables.length; i++) {
     pasables[i].addEventListener('mouseenter', function () { sonar('pasar') })
   }
